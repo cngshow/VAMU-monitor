@@ -1,0 +1,59 @@
+<html>
+<head>
+<style type="text/css">
+   html, body {color:navy; margin:2; padding:2; background:#fff; font-family: "Courier New" Courier monospace;}
+   div.rpt {width: 980px; border-style: solid; border-width:thin;}
+   div.rpt_display {margin-left: 7px; margin-right: 7px}
+   h4 {text-align: center; text-decoration: underline; font-size: 12pt; width: 100%}
+   div.section{font-size: 9pt; text-align: left; margin-left:35px; margin-bottom: 8px; color: green;}
+   table.display {border: 0; width: 100%; border-spacing: 0px}
+   table.display td {font-size: 10pt; text-align: right; padding: 1px; }
+   table.display th {font-size: 10pt; text-align: right; vertical-align: text-bottom; background-color: #888888; border-bottom: solid; border-top: solid;border-width: thin}
+   table.display tr.totals {font-size: 10pt; text-align: right; font-weight: bold; background-color: navy; color: white; }
+   table.display tr.totals.td {border-top: solid; border-color: white; border-width:thin;}
+   table.display td.no_data {text-align: center; color: green; font-weight: bold;}
+   .note {font-size: 8pt; text-align: left; color: #686868; margin-left: 5px;}
+   .pct {font-size: 8pt; text-align: right; color: #FFCC00;}
+   tr.odd {background-color: #e2e2e2;}
+   tr.even {background-color: transparent;}
+   span.red_light {font-size: 10pt; color:red;}
+   span.green_light {font-size: 10pt; color:green;}
+   span.job_code {text-align: left; font-size: 8pt; color:gray;}
+   span.status {display: none;}
+   div.output {font-size: 10pt; color:navy; border: 1px gray solid; width: 650px}
+   div.output_display {margin-left: 7px; margin-right: 7px}
+</style>
+</head>
+<body>
+<div class="output">
+<div class="output_display">
+<span class="status">
+RUN_DATA_BEGIN_GREEN:RED:GREEN:GREEN_RUN_DATA_END
+</span><br>
+<span class="status">
+__RED_LIGHT__
+</span>
+SUBJECT: CHDR Data Flow Alert! - dod_to_va
+<h4>CHDR Data Flow Alert!</h4><br/><br/>
+This is an automated e-mail message.<br/><br/>
+Message Traffic Alert:     <span class="red_light">RED LIGHT</span><br/><br/>
+The VA CHDR application is experiencing data flow issues based on audited messages written in the past 10 minutes as follows:<br/>
+<ul><li><span style="color: GREEN">Z02/Z01 - Z01 count did not reach the minimum threshold of 32 which must be eclipsed in order to check response percentages. However, we are currently ignoring the minimum threshold for clearing events. Because the calculated response percentage is above the clearing percentage we are going green.</span></li><li><span style="color: RED">Z03 Requests are below the low water mark of 1.</span></li><li><span style="color: GREEN">Z06/Z05 - Z05 count did not reach the minimum threshold of 40 which must be eclipsed in order to check response percentages. However, we are currently ignoring the minimum threshold for clearing events. Because the calculated response percentage is above the clearing percentage we are going green.</span></li><li><span style="color: GREEN">Z07/Z06 - Z06 count did not reach the minimum threshold of 40 which must be eclipsed in order to check response percentages. However, we are currently ignoring the minimum threshold for clearing events. Because the calculated response percentage is above the clearing percentage we are going green.</span></li></ul></br>
+<u>Message Counts in the Last 10 Minutes:</u><br/>
+Z01s Received = 0<br/>
+Z02s Sent = 0<br/>
+Z03s Received = 0<br/>
+Z04s Sent = 0<br/>
+Z05s Received = 0<br/>
+Z06s Sent = 0<br/>
+Z07s Received = 0<br/>
+<span class="status">
+INTROSCOPE_DATA_BEGIN_Z01_Received=0;Z02_Sent=0;Z03_Received=0;Z04_Sent=0;Z05_Received=0;Z06_Sent=0;Z07_Received=0_INTROSCOPE_DATA_END<br>
+</span>
+<br/>--------<br/>
+Begin Date (CST) = 07-MAR-14 09:10:15<br/>
+End Date (CST) = 07-MAR-14 09:20:15<br/>
+</div>
+</div><br><br>
+</body>
+</html>

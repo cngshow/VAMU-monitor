@@ -1,0 +1,145 @@
+######################################################################################################################
+#variables section. Variables begin with a ! sign and the value will be whatever the assigned script returns
+#so suppose c:\myscript.pl returns the current time such as 5:23.26, then !time=c:\myscript.pl would result in
+#!time being usable to pass the parameter 5:23.26 to any other script.
+#Bound variables are variables (like!time above) bound to a job in the example below, !time_range is bound to two jobs (HDR_ALERT,MPI_ALERT)
+#Note that nesting bound variables on the right hand side is legal.
+#Example: !time_range ==> HDR_ALERT,MPI_ALERT = ./jobs/ruby/helpers/hdr_timer.rb !lookback !lookback30 !lookback60 !lookback !lookback60
+#Special modifiers:
+#RUBY_EVAL_CODE will execute a snippet of ruby code in SHAMU's jvm. Cheaper then spinning off a jvm, for example do this:
+#!timezone = RUBY_EVAL_CODE Time.now.dst? ? 'CDT' : 'CST'
+#instead of this:
+#!timezone = !path_jruby -e "print Time.now.dst? ? 'CDT' : 'CST'"
+#RUBY_EVAL_FILE will cause shamu to load your file and evaluate it. The last line of your file should be a string result.
+#SECLUDED_RUBY_EVAL_CODE Same as RUBY_EVAL_CODE but in a private child first class loader. This version cannot see SHAMU libraries
+#and cannot impact SHAMU. RUBY_EVAL_FILE is always secluded.
+#RUBY_EVAL_FILE and SECLUDED_RUBY_EVAL_CODE must really be used like so:
+#RUBY_EVAL_FILE_MYCLASSLOADERTAG SECLUDED_RUBY_EVAL_CODE_MYCLASSLOADERTAG2
+#Use these class loader tags to judiciously reuse class loaders where appropriate
+#The 'VANILLA' classloader is always created and can be reused (RUBY_EVAL_FILE_VANILLA) for basic scripts.
+###########################################################################################################################################
+
+!last_known_starter = echo RUBY_EVAL_CODE JobMetadata.get_last_known_status_for_jc
+
+
+###############MONGO ALERT Sample
+!mongo_script = echo ./jobs/mongo_samples/das_alert.js
+!mongo_connect = echo  var host='localhost', port=27017, database='das', collection='audit';
+!mongo_lookback = echo var lookback_millis = 60*1000;
+!mongo_alert_args = echo --eval "!mongo_connect  !mongo_lookback"
+!mongo_shell = echo C:\mongodb2.6\bin\mongo.exe --nodb --quiet
+
+MONGO_ALERT1,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT2,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT3,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT4,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT5,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT6,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT7,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT8,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT9,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT10,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT11,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT12,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT13,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT14,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT15,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT16,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT17,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT18,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT19,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT20,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT21,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT22,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT23,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT24,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT25,  !mongo_shell !mongo_alert_args !mongo_script
+MONGO_ALERT26,  !mongo_shell !mongo_alert_args !mongo_script
+###### END MONGO_ALERT
+
+#############MONGO REPORT SAMPLE (JAVA, JAVASCRIPT)
+!java_runner = echo RUBY_EVAL_FILE_VANILLA ./jobs/lib/java_runner_internal.rb
+!java_runner_pure_ruby = echo RUBY_EVAL_FILE_VANILLA ./jobs/lib/java_runner_internal_pure_ruby.rb
+!end_time  = RUBY_EVAL_CODE t= Time.now;  (t - t.sec - 60*t.min - 60*60*t.hour).to_i.to_s #1.day.from_now.to_i.to_s
+!days_back = echo 90
+!start_time = RUBY_EVAL_CODE (Time.at(!end_time) - !days_back*24*60*60).to_i.to_s
+!mongo_report_time_args =  echo  var start_time='!start_time', end_time='!end_time';
+!mongo_report_totals_args = echo  --eval "!mongo_connect  !mongo_report_time_args"
+
+!mongo_das_report_classpath = echo ./jobs/mongo_samples/mongodas.jar
+#!mongo_das_report_classpath = echo C:\IDES\eclipse-workspaces\workspace_term_play\MongoJava\bin
+!mongo_das_report_classpath = echo !mongo_das_report_classpath,./jobs/lib/mongo-java-driver-2.10.1.jar
+!mongo_das_report_main_class = echo gov.va.vamu.mongo.MongoDASReport
+MONGO_REPORT, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT, !java_runner !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT1, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT1, !java_runner !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT1, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT1, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT2, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT2, !java_runner !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT2, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT2, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT3, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT3, !java_runner !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT3, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT3, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT4, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT4, !java_runner_pure_ruby !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT4, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT5, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT5, !java_runner_pure_ruby !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT5, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+MONGO_REPORT6, RUBY_EVAL_CODE "<h3>From: " + Time.at(!start_time).strftime("%Y-%m-%d") + ', To: ' +  Time.at(!end_time).strftime("%Y-%m-%d") + "</h3>"
+MONGO_REPORT6, !java_runner_pure_ruby !mongo_das_report_classpath !mongo_das_report_main_class localhost 27017 das audit !start_time !end_time
+##MONGO_REPORT6, java -jar c:\temp\mongodas.jar localhost 27017 das audit !start_time !end_time
+MONGO_REPORT6, !mongo_shell !mongo_report_totals_args ./jobs/mongo_samples/das_audit_totals.js
+
+############END MONGO REPORT SAMPLE
+
+###############MONGO USAGE REPORT (JRUBY)
+!mongo_das_ruby_file = echo RUBY_EVAL_FILE_MONGODAS ./jobs/mongo_samples/mongo_usage_report.rb
+MONGO_STATS_REPORT, !mongo_das_ruby_file localhost 27017 das system.profile 5 !start_time !end_time
+###########END MONGO USAGE REPORT
+
+#Super simple example
+#MONGO_HELLO, sleep 3
+MONGO_HELLO, echo Hello Cris and Greg
+
+!test_red_green_last_run ==> TEST_RED_GREEN,TEST_RED_GREEN2 = !last_known_starter("TEST_RED_GREEN", "run_data")
+#!test_red_green_last_status ==> TEST_RED_GREEN = !last_known_starter("TEST_RED_GREEN", "")
+!time_for_trg ==> TEST_RED_GREEN, TEST_RED_GREEN2 = RUBY_EVAL_CODE Time.now.to_s
+
+TEST_RED_GREEN, echo Hi I am a RED/GREEN JOB
+TEST_RED_GREEN, echo __RED_LIGHT__
+TEST_RED_GREEN, echo  __GREEN_LIGHT__
+TEST_RED_GREEN, echo EMAIL_RESULT_BELOW:
+TEST_RED_GREEN, echo SUBJECT: RED GREEN
+TEST_RED_GREEN, echo RED LIGHT!!!
+TEST_RED_GREEN, echo GREEN_LIGHT!!!
+TEST_RED_GREEN, echo Run data for the last run was !test_red_green_last_run
+TEST_RED_GREEN, echo RUN_DATA_BEGIN_ !time_for_trg _RUN_DATA_END
+TEST_RED_GREEN, echo INTROSCOPE_DATA_BEGIN_ !time_for_trg _INTROSCOPE_DATA_END
+TEST_RED_GREEN, echo EMAIL_RESULT_ABOVE:
+
+TEST_RED_GREEN2, echo Hi I am a RED/GREEN JOB
+#TEST_RED_GREEN2, echo __RED_LIGHT__
+TEST_RED_GREEN2, echo  __GREEN_LIGHT__
+TEST_RED_GREEN2, echo EMAIL_RESULT_BELOW:
+TEST_RED_GREEN2, echo SUBJECT: RED GREEN
+#TEST_RED_GREEN2, echo RED LIGHT!!!
+TEST_RED_GREEN2, echo GREEN_LIGHT!!!
+TEST_RED_GREEN2, echo Run data for the last run was !test_red_green_last_run
+TEST_RED_GREEN2, echo RUN_DATA_BEGIN_ !time_for_trg _RUN_DATA_END
+TEST_RED_GREEN2, echo INTROSCOPE_DATA_BEGIN_ !time_for_trg _INTROSCOPE_DATA_END
+TEST_RED_GREEN2, echo EMAIL_RESULT_ABOVE:

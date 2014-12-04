@@ -1,0 +1,19 @@
+<img src="./assets/vamu.png" style="float: left;padding-right: 30px" />
+<div style="padding-top: 30px; font-size: medium">
+    <% if current_user %>
+        Hi, <% if current_user.administrator? %>	administrator <% end %>
+        <%=h current_user.username %>.
+        <br><br>
+    <%end%>
+    The Veteran's Health Alert Monitoring Utility (VHAMU) automates the monitoring of overall system health through a variety of executable jobs.
+    <br><br><br><br>
+    Download the <a href="documents/chdr_shamu_userguide.doc"><span style="color: green"><b>VHAMU User Guide</b></span></a> for more on all of the features VHAMU has to offer.
+    <br><br><br><br>
+
+    <% unless current_user %>
+        <%if @user_count > 0 %>
+            Please <%= link_to "log in", new_user_session_path %> to use the system, or
+        <%end%>
+        <%= link_to "Sign up", new_user_registration_path %> for a new account.
+    <%end%>
+</div>

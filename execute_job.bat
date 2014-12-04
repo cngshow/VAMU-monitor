@@ -1,0 +1,1 @@
+java -jar %JRUBY_COMPLETE_JAR% .\jobs\ruby\execute_job.rb %1

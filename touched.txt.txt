@@ -1,0 +1,5 @@
+bundle_install.bat
+bundle_update.bat
+rails_console.bat
+startup.bat
+

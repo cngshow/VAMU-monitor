@@ -1,0 +1,1 @@
+java -jar %JRUBY_COMPLETE_JAR% ./script/rails r -e %1 "JobMetadata.repair_escalations"

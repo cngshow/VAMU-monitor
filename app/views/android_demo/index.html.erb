@@ -1,0 +1,188 @@
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('#wizard').smartWizard();
+
+      function onFinishCallback(){
+          $('#wizard').smartWizard('showMessage','Finish Clicked');
+      }
+  });
+</script>
+
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr><td>
+    <!-- Smart Wizard -->
+    <h2>Android Monitoring</h2>
+    <div id="wizard" class="swMain">
+      <ul style="display: none">
+        <li><a href="#step-1">
+          <label class="stepNumber">1</label>
+                <span class="stepDesc">
+                   Step 1<br />
+                   <small>Welcome to Android</small>
+                </span>
+        </a></li>
+        <li><a href="#step-2">
+          <label class="stepNumber">2</label>
+                <span class="stepDesc">
+                   Step 2<br />
+                   <small>Step 2 description</small>
+                </span>
+        </a></li>
+        <li><a href="#step-3">
+          <label class="stepNumber">3</label>
+                <span class="stepDesc">
+                   Step 3<br />
+                   <small>Step 3 description</small>
+                </span>
+        </a></li>
+        <li><a href="#step-4">
+          <label class="stepNumber">4</label>
+                <span class="stepDesc">
+                   Step 4<br />
+                   <small>Step 4 description</small>
+                </span>
+        </a></li>
+        <li><a href="#step-5">
+          <label class="stepNumber">5</label>
+                <span class="stepDesc">
+                   Step 5<br />
+                   <small>Step 5 description</small>
+                </span>
+        </a></li>
+        <li><a href="#step-6">
+          <label class="stepNumber">6</label>
+                <span class="stepDesc">
+                   Step 6<br />
+                   <small>Step 6 description</small>
+                </span>
+        </a></li>
+        <li><a href="#step-7">
+          <label class="stepNumber">6</label>
+                <span class="stepDesc">
+                   Step 6<br />
+                   <small>Step 6 description</small>
+                </span>
+        </a></li>
+      </ul>
+      <div id="step-1">
+        <h2 class="StepTitle">Welcome to Android</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/1.png">
+            <div style="width: 60%; float: right">The VHAMU application will appear on your Android device. Click the image to launch the application.</div>
+        </div>
+        <div style="width: 48%; float: right">
+            <img src="/assets/android_demo/2.png">
+            <div style="width: 60%; float: right; padding-right: 10px">
+                The welcome screen will appear once the application is up and running.
+            </div>
+        </div>
+      </div>
+      <div id="step-2">
+        <h2 class="StepTitle">Setup Preferences / Alerts</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/3.png">
+            <div style="width: 60%; float: right">Enter the URL to VHAMU and your desired polling frequency for alerting purposes.</div>
+        </div>
+        <div style="width: 48%; float: right">
+            <img src="/assets/android_demo/4.png">
+            <div style="width: 60%; float: right; padding-right: 10px">
+                Select the alerts of interest to you and click the back button to save your selections.
+            </div>
+        </div>
+      </div>
+      <div id="step-3">
+        <h2 class="StepTitle">View Current VHAMU Status / Start Service</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/5.png">
+            <div style="width: 60%; float: right">After selecting alerts of interest you will be presented with the current state of VHAMU.</div>
+        </div>
+        <div style="width: 48%; float: right">
+            <img src="/assets/android_demo/6.png">
+            <div style="width: 60%; float: right; padding-right: 10px">
+                Drop down the menu in the top right corner and choose 'Start Service' to begin polling. When an alert that you have marked on the preference page changes status, you will be alerted on your Android device.
+            </div>
+        </div>
+      </div>
+      <div id="step-4">
+        <h2 class="StepTitle">Alert Notifications</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/6a.png">
+            <div style="width: 60%; float: right">
+              When an alert goes 'RED' or 'CLEARS', you will be notified on the device with an audible noise and the device will vibrate.
+            </div>
+        </div>
+        <div style="width: 48%; float: right">
+          <img src="/assets/android_demo/6b.png">
+          <div style="width: 60%; float: right; padding-right: 10px">
+            Pulling down on the alert notification will display additional information about the current state of the alerts.
+          </div>
+        </div>
+      </div>
+      <div id="step-5">
+        <h2 class="StepTitle">Alert Status Page / Details</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/7.png">
+            <div style="width: 60%; float: right">
+              The alerts are displayed with RED alerts on top followed by the GREEN alerts.<br><br>
+              Clicking on an alert will open a detailed page for that individual job run.
+            </div>
+        </div>
+        <div style="width: 48%; float: right">
+          <div style="width: 48%; float: left">
+            <img src="/assets/android_demo/8a.png"><br>
+                The detail page displays additional information about the job.
+          </div>
+          <div style="width: 48%; float: right; padding-right: 10px">
+            <img src="/assets/android_demo/8b.png"><br>
+                Swiping the page to the left will display the job description and the run details.
+          </div>
+        </div>
+      </div>
+      <div id="step-6">
+        <h2 class="StepTitle">Pull to Refresh / VHAMU Widget</h2>
+        <div style="width: 48%; float: left;">
+            <img src="/assets/android_demo/9.png">
+            <div style="width: 60%; float: right">
+              When viewing the active alert page, you can refresh the listing without waiting for the polling interval by swiping your finger down the page and releasing. This will make a call out to VHAMU to get the latest status of the alerts and will refresh the page.
+            </div>
+        </div>
+        <div style="width: 48%; float: right">
+            <img src="/assets/android_demo/10.png">
+            <div style="width: 60%; float: right; padding-right: 10px">
+                Adding the VHAMU widget to your Android device allows you to receive automatic updates within a simple legend. The widget status to the right shows that VHAMU is currently alerting (RED X) and is currently polling (Running man).
+            </div>
+        </div>
+      </div>
+      <div id="step-7">
+        <h2 class="StepTitle">VHAMU Widget Statuses</h2>
+        <div style="width: 48%; float: left;">
+            <div style="width: 48%; float: left">
+                <img src="/assets/android_demo/11a.png"><br>
+                The widget above is notifying the user that all interesting alerts in VHAMU are GREEN and we are actively polling.<br><br>
+            </div>
+            <div style="width: 48%; float: right">
+                <img src="/assets/android_demo/11b.png"><br>
+                The widget above is notifying the user that all interesting alerts in VHAMU were GREEN as of the last data pull and we are NOT actively polling.<br>
+            </div>
+        </div>
+        <div style="width: 48%; float: right;">
+            <div style="width: 48%; float: left">
+                <img src="/assets/android_demo/11c.png"><br>
+                  The widget above is notifying the user that all interesting alerts in VHAMU were GREEN as of the last data pull and we are waiting on network connectivity.<br>
+            </div>
+            <div style="width: 48%; float: right; padding-right: 10px">
+                <img src="/assets/android_demo/11d.png"><br>
+                The widget above is notifying the user that an interesting alert is RED and we are actively polling.<br>
+            </div>
+        </div>
+      </div>
+    </div>
+    <!-- End SmartWizard Content -->
+  </td></tr>
+  <tr><td>
+    <div style="font: normal 12px Verdana, Arial, Helvetica, sans-serif; color:#5A5655;">
+      <br>
+      <a href="vhamu_monitor.apk">Download the VHAMU APK now!</a>
+    </div>
+  </td></tr>
+</table>

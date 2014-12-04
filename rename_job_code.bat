@@ -1,0 +1,1 @@
+java -jar %JRUBY_COMPLETE_JAR% ./script/rails r -e %1 "JobLogEntry.rename_job_code('%2','%3')"

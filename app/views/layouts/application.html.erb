@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml2/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <title><%= controller.action_name %></title>
+  <%= stylesheet_link_tag "application_template" %>
+  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+  <%= javascript_include_tag "utils" %>
+  <%= stylesheet_link_tag 'sdmenu.css' %>
+  <%= javascript_include_tag 'sdmenu.js' %>
+  <%= stylesheet_link_tag 'jQuery-Smart-Wizard/demo_style.css' %>
+  <%= stylesheet_link_tag 'jQuery-Smart-Wizard/smart_wizard.css' %>
+  <%= javascript_include_tag 'jQuery-Smart-Wizard/jquery.smartWizard.js' %>
+
+  <script type="text/javascript">
+      function loadMenu() {
+          var main_menu = new SDMenu("main_menu");
+          main_menu.speed = 3;                     // Menu sliding speed (1 - 5 recommended)
+          main_menu.remember = true;               // Store menu states (expanded or collapsed) in cookie and restore later
+          main_menu.oneSmOnly = false;             // One expanded submenu at a time
+          main_menu.markCurrent = true;            // Mark current link / page (link.href == location.href)
+          main_menu.init();
+
+          // due to IE flashing when the js is 'remembering' the menu state we have to hide the main_menu div and
+          // then call the init method to render it followed by showing the div to prevent the menu from displaying
+          // all menu items in a group and then collapsing the menu
+          $("#main_menu").css("display", "block");
+      }
+  </script>
+
+  <%= csrf_meta_tags %>
+
+</head>
+<body>
+<div id="headerDiv">
+  <div class="innertube">
+    <%= render :partial => 'application/header' %>
+  </div>
+</div>
+
+<div id="menu">
+  <div class="innertube">
+    <div id="main_menu" class="sdmenu" style="margin-top: 1em; ">
+      <%= raw render :partial => 'application/menu' %>
+    </div>
+  </div>
+</div>
+
+<div id="page_nav">
+  <%= render :partial => 'application/page_hdr' %>
+</div>
+
+<div id="maincontent">
+  <div class="innertube">
+    <%= content_tag(:div, raw(flash[:alert]), :id => "flash_alert") if flash[:alert] %>
+    <%= content_tag(:div, raw(flash[:notice]), :id => "flash_notice") if flash[:notice] %>
+    <%= content_tag(:div, raw(flash[:error]), :id => "flash_error") if flash[:error] %>
+    <%= yield %>
+  </div>
+</div>
+
+<div id="footerDiv">
+  <div class="footer_innertube">
+    VHAMU version <%= $application_properties['vhamu_version'] %>
+  </div>
+</div>
+
+<%= write_on_ready %>
+
+</body>
+</html>

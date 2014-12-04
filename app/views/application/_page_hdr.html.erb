@@ -1,0 +1,32 @@
+<% if defined? @page_nav
+     first = true
+%>
+    <div class="stm_page_nav" style="float: right">
+      <ul id="treemenu1">
+        <% @page_nav.each do |hash|
+          route   = hash[:route]
+          confirm = hash[:confirm]
+          label   = hash[:label]
+          submit  = hash[:submit_form_name] #javascript: document.forms['admin_user_update_path'].submit()
+          submit_idx  = hash[:submit_form_idx] #javascript: document.forms[idx].submit()
+          js      = hash[:js]
+          js = "document.forms['#{submit}'].submit()" unless submit.nil?
+          js = "document.forms[#{submit_idx}].submit()" unless submit_idx.nil?
+
+          if (js.nil?)
+            link = "<a href=\"javascript:navigate('#{route}', '#{confirm}');\" $$>#{label}</a>"
+          else
+            link = "<a href=\"javascript:#{js}\">#{label}</a>"
+          end
+          link.sub!('$$', 'style="border-left: 2px solid #d3d3d3"') if first
+          link.sub!('$$', '')
+          first = false
+        %>
+            <li><%= raw link %></li>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
+<% if @page_hdr %>
+    <div id="page_hdr"><span style="vertical-align: middle;"><%= @page_hdr %></span></div>
+<% end %>

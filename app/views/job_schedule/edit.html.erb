@@ -1,0 +1,5 @@
+<h3 style="color: red">Note: Enter the scheduled times in local server time.</h3>
+<%= form_tag('/job_schedule_update', name: "job_scheduler_form") do %>
+    <%= text_area_tag "schedule", @schedule, :class => "job_scheduler"%>
+<% end %>
+
