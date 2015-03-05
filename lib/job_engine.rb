@@ -21,8 +21,8 @@ java_import 'va.shamu.quartz.SHAMUScheduler' do |pkg, cls|
   'JSchedule'
   end
 
-java_import 'va.shamu.quartz.WorkHolder' do |pkg, cls|
-  'JWorkHolder'
+java_import 'va.shamu.quartz.WorkNotifier' do |pkg, cls|
+  'JWorkNotifier'
 end
 
 java_import 'java.lang.System' do |pkg, cls|
@@ -39,10 +39,16 @@ java_import java.util.concurrent.Executors
 
 
 class JobEngine
+  include java.util.Observer
 
   COMMAND_FILE = './config/commands.txt'
 
   public
+
+  #this method is for java's Observer/Observable pattern making the Job Engine an observer of our WorkNotifier impl.
+  def update(observable, request)
+    run_scheduled_job(request.to_s)
+  end
 
   def run_scheduled_job(request)
 
@@ -260,18 +266,6 @@ class JobEngine
         #start the job engine
         $application_properties = PropLoader.load_properties('./pst_dashboard.properties')
         JobEngine.instance.set_schedule
-        @work_watcher_thread = Thread.new do
-          JWorkHolder.instance.getWork #any leftover work from previous schedules is destroyed
-          while(started?) do
-            work = JWorkHolder.instance.getWork
-            work.each do |job_code|
-              $logger.info("Received the following work from quartz: " + job_code)
-              run_scheduled_job(job_code)
-            end
-            sleep 1
-          end
-        end
-        @work_watcher_thread[:name] = "Job Engine work watcher"
         gc_interval = nil
         begin
           gc_interval = $application_properties['gc_interval'].to_i
@@ -459,6 +453,7 @@ class JobEngine
     @job_watcher.start!
     max_jobs = $application_properties['max_jobs'].to_i
     @job_pool = ThreadPool.new(max_jobs)
+    JWorkNotifier.instance.addObserver(self)
   end
 
   def self.safe_eval(the_code)
@@ -675,7 +670,6 @@ class JobEngine
 
     recipients = recipients.uniq.join(',')
     cc = cc.uniq.join(',')
-
     email_hash = {:request => jmd.job_code, :content_type => content_type, :subject=>subject,
                   :recipients=>recipients, :from=>from, :cc=>cc,:body=>body,
                   :incl_attachment=>jmd.incl_attachment,:attachment_path=>jmd.attachment_path,
@@ -808,7 +802,7 @@ class JobEngine
 
       #set the email columns based on whether this was called from the service or cron
       service_to = jlh[:email_to] if (jlh[:service])
-      if (status_changed)
+      if (jlh[:service].nil? || status_changed)
         jlh.merge!(get_email_list(jle.job_code))
       end
       jlh[:email_to] = Array.new if (jlh[:email_to].nil? && !service_to.nil?)
