@@ -1,0 +1,130 @@
+<a class="link" style="text-color: blue; text-decoration: underline">Print / E-Mail Chart</a>
+
+<script type="text/javascript"
+        src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }">
+
+</script>
+
+<script type="text/javascript">
+    google.load('visualization', '1', {packages: ['corechart']});
+    google.setOnLoadCallback(drawChart);
+    var chart;
+    var data;
+    var options;
+    var myView;
+    var now = new Date();
+    var midnightEpoch = now.setUTCHours(0, 0, 0, 0);
+    var symbolIdx = {};
+    var originalTitle = '<%=@title%>';
+    function drawChart() {
+
+        data = new google.visualization.DataTable();
+        data.addColumn('datetime', 'Time');
+        <%@element_description.values.each do |description|  %>
+        <%= raw "data.addColumn('number', '#{description}');"%>
+        <%end%>
+
+        data.addRows([
+
+            <% @chart_hash.keys.sort.each do |epoch| %>
+            [new Date(<%= epoch %>), <%= @chart_hash[epoch][:cats] %>, <%= @chart_hash[epoch][:dogs] %>],
+            <% end %>
+        ]);
+
+        options = {
+            title: <%=raw("'#{@title}\\n#{@time_span}'")%>,
+            hAxis: {
+                title: <%=raw("'#{@x_title}'")%>
+            },
+            vAxis: {
+                title:<%=raw("'#{@y_title}'")%>
+            },
+
+            explorer: {
+                actions: ['dragToZoom', 'rightClickToReset'],
+                maxZoomIn: .01,
+                keepInBounds: true,
+                axis: 'horizontal'
+            }
+
+        };
+        myView = new google.visualization.DataView(data);
+        chart = new google.visualization.LineChart(
+                document.getElementById('chartContainer'));
+        chart.draw(myView, options);
+
+
+    }
+
+    $("a.link").on("click", function () {
+        window.open(chart.getImageURI(), '_blank');
+    });
+
+
+    function syncChart() {
+        var filteredRows;
+        myView = new google.visualization.DataView(data);
+        var cbxs = $('.line');
+        var daysFilter = $('#days_filter').val();
+        if (daysFilter !== 'ALL') {
+            daysFilter = parseInt(daysFilter);
+            var daysBack = new Date(midnightEpoch - daysFilter * 24 * 60 * 60 * 1000);
+            filteredRows = myView.getFilteredRows([{column: 0, minValue: daysBack, maxValue: now}]);
+        }
+        var hiddenColumns = [];
+
+        for (var i = 0, len = cbxs.length; i < len; i++) {
+            var cbx = cbxs[i];
+            if (!cbx.checked) {
+                hiddenColumns.push(symbolIdx[cbx.id]);
+            }
+        }
+        myView.hideColumns(hiddenColumns);
+        if (!filteredRows) {
+            options['title'] = originalTitle + "\n" + "<%=@time_span%>";
+            //myView.getValue(0, 0) + " -- " + myView.getValue(myView.getNumberOfRows() - 1, 0);
+        } else {
+            var first = myView.getValue(filteredRows[0], 0);
+            var last = myView.getValue(filteredRows[filteredRows.length - 1], 0);
+
+            options['title'] = originalTitle + "\n" + first.toString() + " -- " + last.toString();
+
+        }
+        if (filteredRows) {
+            myView.setRows(filteredRows);
+        }
+        chart.draw(myView, options);
+    }
+</script>
+
+<h1>Historical charts</h1>
+
+<fieldset>
+  <legend>Filter Criteria</legend>
+  Days Filter:
+  <select id="days_filter" onchange="syncChart();">
+    <%@selection_filter.each_pair do |key, value|%>
+        <option value="<%=key%>"><%=value%></option>
+  <%end%>
+  </select>
+  <%
+     count = 1
+     @element_description.keys.each do |key|
+  %>
+      <script>symbolIdx['<%=key.to_s%>'] =<%=count%>;</script>
+      <input type="checkbox" id='<%= key.to_s %>' class="line" checked="true" value="<%= key.to_s %>" onclick="syncChart();"><%= @element_description[key] %>
+      <% count += 1 %>
+  <% end %>
+
+</fieldset>
+
+<div id="chartContainer" style="height: 90%; width: 100%;margin: 5px; padding: 5px; border-bottom: solid; border-top: solid; border-color: navy"/>
+
+
+

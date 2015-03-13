@@ -1,4 +1,6 @@
 PSTDashboard::Application.routes.draw do
+  get "charting/show_chart"
+  get "charting/show_chart_google"
   #devise_for :users
   devise_for :users, :controllers => { :registrations => "registrations", :sessions => "sessions" }
   devise_scope :user do get '/users/sign_out' => 'sessions#destroy' end
