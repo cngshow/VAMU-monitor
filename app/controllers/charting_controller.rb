@@ -1,9 +1,37 @@
+require 'time'
+require './jobs/reports/vdas/das_quickstats_module.rb'
+
 class ChartingController < ApplicationController
+  include DasQuickstats
+  a = true
+  @@charting_properties = nil
+  begin
+    $logger.info 'we are at line 6'
+    if @@charting_properties.nil?
+      @@charting_properties = PropLoader.load_properties('./das_charting.properties')
+      $logger.info("DAS charting properties loaded successfully.")
+    end
+  rescue
+    $logger.error "Failed to load ./das_charting.properties "<< $!.to_s
+  end
+
   def show_chart
-    @x_title = "Time"
-    @y_title = "Count"
     @chart_hash = {}
-    #keep @selection_filter in sync with @element_description
+    @element_description = {}
+    data = get_quickstats
+
+    data.each_pair do |time, count_hash|
+      time = time.to_i * 1000
+      @chart_hash[time] = {}
+
+      count_hash.each_pair do |type, count_hash|
+        @element_description[type] = type.to_s.upcase unless @element_description.has_key?(type)
+        @chart_hash[time][type] = count_hash["count"]
+      end
+    end
+
+    @x_title = "Date Range"
+    @y_title = "Count"
     @selection_filter= {"ALL" => "All Days",
                         "1" => "1 Day",
                         "2" => "2 Days",
@@ -12,26 +40,31 @@ class ChartingController < ApplicationController
                         "5" => "5 Days",
                         "6" => "6 Days",
                         "7" => "7 Days"}
-    @element_description = {cats: "The Cats!!!", dogs: "The dogs!!!"}
-    # @chart_hash[Time.now.to_i * 1000] = 5
-    # @chart_hash[Time.now.to_i * 1000 + 100000] = 15
-    # @chart_hash[1.hour.ago.to_i * 1000] = 10
-    # @chart_hash[1.month.ago.to_i * 1000] = 18
-    # @chart_hash[1.month.from_now.to_i * 1000] = 18
-    past = 1.month.ago
-    past_date = Time.now
-    past = past_date.to_i#past.to_i- past.hour*60*60 - past.min*60 - past.sec
-    (1..288*10).to_a.each do |i|
-      @chart_hash[(past - 5*60*i) * 1000] = {cats: rand(100)}
-      @chart_hash[(past - 5*60*i) * 1000][:dogs] = rand(100)
-    end
-    @title = "Sample chart "
-    @time_span =  Time.at(@chart_hash.keys[-1]/1000).to_s + " -- " + Time.at(@chart_hash.keys[0]/1000).to_s
+
+    @title = "Quickstats Rolling Report"
+    @time_span =  Time.at(@chart_hash.keys[0]/1000).strftime('%m/%-d/%Y') + " thru " + Time.at(@chart_hash.keys[-1]/1000).strftime('%m/%-d/%Y')
   end
 
+  def get_quickstats
+    raise "error getting the charting properties" if @@charting_properties.nil?
+    $logger.info 'in charting props'
+    host = @@charting_properties['host']
+    ecrud = @@charting_properties['ecrud']
+    query_hash = {}
+    query_hash[:haims] = 'serviceTreatmentRecords'#midnight to midnight (all else use 0500 offset)
+    query_hash[:dbqs] = 'disabilityBenefitsQuestionnaires'
+    query_hash[:vbms] = 'serviceTreatmentRecords.subscriptions'
+    query_hash[:ecfts] = 'electronicCaseFiles'
+    query_hash[:immunizations] = 'immunizations'
+    query_hash[:direct_msg] = 'directSecureMessaging.cda'
+    days_back = @@charting_properties['days_back'].to_i
+    rpt_date = Time.now.strftime('%Y%m%d')
+    a = Date.strptime(rpt_date, '%Y%m%d').to_time
+    data = process_rpt(query_hash, host, ecrud, days_back, a)
+    data
+  end
 
   def show_chart_google
     show_chart
   end
-
 end

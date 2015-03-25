@@ -149,8 +149,8 @@ class JobLogEntry
         arg_scope[:dr0] = date_range[0]
       else
         arg_array << "(this.finish_time >= dr0 && this.finish_time <= dr1)"
-        arg_scope[dr0] = date_range[0]
-        arg_scope[dr1] = date_range[1]
+        arg_scope[:dr0] = date_range[0]
+        arg_scope[:dr1] = date_range[1]
       end
     end
 

@@ -1,5 +1,5 @@
 //load("c:/m_vamu/PSTDashboard/jobs/mongo_samples/das_audit_lib.js")
-//auditData("localhost","27017","das","audit",2)
+//auditData("localhost","27017","das","audit",500)
 function getStatus() {
     var time = new Date(new Date());
    // var time = new Date(new Date() - 1000*60*60*24*3);

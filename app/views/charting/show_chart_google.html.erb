@@ -1,4 +1,4 @@
-<a class="link" style="text-color: blue; text-decoration: underline">Print / E-Mail Chart</a>
+<a class="link" style="text-color: blue; text-decoration: underline; cursor: hand; cursor: pointer">Print / E-Mail Chart</a>
 
 <script type="text/javascript"
         src="https://www.google.com/jsapi?autoload={
@@ -8,9 +8,7 @@
               'packages':['corechart']
             }]
           }">
-
 </script>
-
 <script type="text/javascript">
     google.load('visualization', '1', {packages: ['corechart']});
     google.setOnLoadCallback(drawChart);
@@ -22,20 +20,16 @@
     var midnightEpoch = now.setUTCHours(0, 0, 0, 0);
     var symbolIdx = {};
     var originalTitle = '<%=@title%>';
-    function drawChart() {
 
+    function drawChart() {
         data = new google.visualization.DataTable();
         data.addColumn('datetime', 'Time');
+
         <%@element_description.values.each do |description|  %>
-        <%= raw "data.addColumn('number', '#{description}');"%>
+            <%= raw "data.addColumn('number', '#{description}');"%>
         <%end%>
 
-        data.addRows([
-
-            <% @chart_hash.keys.sort.each do |epoch| %>
-            [new Date(<%= epoch %>), <%= @chart_hash[epoch][:cats] %>, <%= @chart_hash[epoch][:dogs] %>],
-            <% end %>
-        ]);
+        data.addRows([<%= add_rows %>]);
 
         options = {
             title: <%=raw("'#{@title}\\n#{@time_span}'")%>,
@@ -88,19 +82,26 @@
         myView.hideColumns(hiddenColumns);
         if (!filteredRows) {
             options['title'] = originalTitle + "\n" + "<%=@time_span%>";
-            //myView.getValue(0, 0) + " -- " + myView.getValue(myView.getNumberOfRows() - 1, 0);
         } else {
             var first = myView.getValue(filteredRows[0], 0);
             var last = myView.getValue(filteredRows[filteredRows.length - 1], 0);
-
-            options['title'] = originalTitle + "\n" + first.toString() + " -- " + last.toString();
-
+            options['title'] = format_title(originalTitle, first, last);
         }
         if (filteredRows) {
             myView.setRows(filteredRows);
         }
         chart.draw(myView, options);
     }
+
+    function format_title(originalTitle, first, last){
+        var ret = originalTitle + "\n";
+        var month = first.getMonth() + 1;
+        ret += (month < 10 ? '0' : '') + month.toString() + "/" + first.getDate().toString() + "/" +  first.getFullYear().toString() + "thru ";
+        month = last.getMonth() + 1;
+        ret += (month < 10 ? '0' : '') + month.toString() + "/" + last.getDate().toString() + "/" +  last.getFullYear().toString();
+        return ret;
+    }
+
 </script>
 
 <h1>Historical charts</h1>
@@ -121,10 +122,6 @@
       <input type="checkbox" id='<%= key.to_s %>' class="line" checked="true" value="<%= key.to_s %>" onclick="syncChart();"><%= @element_description[key] %>
       <% count += 1 %>
   <% end %>
-
 </fieldset>
 
-<div id="chartContainer" style="height: 90%; width: 100%;margin: 5px; padding: 5px; border-bottom: solid; border-top: solid; border-color: navy"/>
-
-
-
+<div id="chartContainer" style="height: 480px; width: 95%;margin: 5px; padding: 5px; border-bottom: solid; border-top: solid; border-color: navy"/>
