@@ -18,3 +18,16 @@ class PropLoader
     properties
   end  
 end
+
+module PropHashBuilder
+  def get_prop_hash(prop_file, logger = nil)
+    prop_hash = {}
+    begin
+      prop_hash = PropLoader.load_properties(prop_file)
+      logger.info("PropFile #{prop_file} was loaded successfully.") unless logger.nil?
+    rescue
+      logger.error "Failed to load #{prop_file}" << $!.to_s unless logger.nil?
+    end
+    prop_hash
+  end
+end

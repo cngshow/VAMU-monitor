@@ -27,7 +27,7 @@
 # VDAS_QUICKSTATS report
 ###########################################################
 !vdas_quickstats_rpt ==> VDAS_QUICKSTATS = echo ./jobs/reports/vdas/quickstats.rb
-!vdas_host ==> VDAS_QUICKSTATS = echo https://bhietestsapp4.vaco.va.gov/
+#!vdas_host ==> VDAS_QUICKSTATS = echo https://bhietestsapp4.vaco.va.gov/
 !vdas_now_ARG ==> VDAS_QUICKSTATS = RUBY_EVAL_CODE Time.now.strftime('%Y%m%d')
 #ARG_DEFINITION|VHLER DAS Quickstats End Date|Enter in the date that the report will end on in yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
 !vdas_lookback ==> VDAS_QUICKSTATS = echo 7
@@ -37,7 +37,7 @@
 VDAS_QUICKSTATS, echo EMAIL_RESULT_BELOW:
 VDAS_QUICKSTATS, echo SUBJECT: Rolling Week Quickstats Summary
 VDAS_QUICKSTATS, cat !html_header
-VDAS_QUICKSTATS, !jruby_runner !vdas_quickstats_rpt !vdas_host !vdas_now_ARG !vdas_lookback
+VDAS_QUICKSTATS, !jruby_runner !vdas_quickstats_rpt !vdas_now_ARG !vdas_lookback
 VDAS_QUICKSTATS, cat !html_footer
 VDAS_QUICKSTATS, echo EMAIL_RESULT_ABOVE:
 

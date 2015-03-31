@@ -3,17 +3,9 @@ require './jobs/reports/vdas/das_quickstats_module.rb'
 
 class ChartingController < ApplicationController
   include DasQuickstats
-  a = true
-  @@charting_properties = nil
-  begin
-    $logger.info 'we are at line 6'
-    if @@charting_properties.nil?
-      @@charting_properties = PropLoader.load_properties('./das_charting.properties')
-      $logger.info("DAS charting properties loaded successfully.")
-    end
-  rescue
-    $logger.error "Failed to load ./das_charting.properties "<< $!.to_s
-  end
+  extend PropHashBuilder
+
+  @@charting_properties = ChartingController.get_prop_hash("./das_charting.properties", $logger)
 
   def show_chart
     @chart_hash = {}

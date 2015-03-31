@@ -1,78 +1,39 @@
 require 'date'
+require 'time'
 require 'cgi'
 require 'json'
 require 'uri'
 require 'net/http'
 require './jobs/reports/vdas/das_quickstats_module'
+require './jobs/ruby/helpers/logger_helper'
+require './lib/prop_loader'
 
+include JobLogging
 include DasQuickstats
+extend PropHashBuilder
 
 begin
-QUERY = '{"uploadDate":{"$gte":"$Date(--GTE_DATE--)","$lt":"$Date(--LTE_DATE--)"}}'
+  QUERY = '{"uploadDate":{"$gte":"$Date(--GTE_DATE--)","$lt":"$Date(--LTE_DATE--)"}}'
 
-# HOST = ARGV.shift
-# QUERY_DB = 'ecrud/v1/core/'
+  @log_path = "./log/quickstats.log"
+  $logger = get_logger(@log_path, "VDAS_QUICKSTATS", :DEBUG, true)
 
 # reporting date
-@@rpt_date = Date.strptime(ARGV.shift, '%Y%m%d').to_time
+  @@rpt_date = Date.strptime(ARGV.shift, '%Y%m%d').to_time
 
 # reporting days back
-@@days_back = ARGV.shift.to_i
+  @@days_back = ARGV.shift.to_i
 
-query_hash = {}
-query_hash[:haims] = 'serviceTreatmentRecords'#midnight to midnight (all else use 0500 offset)
-query_hash[:dbqs] = 'disabilityBenefitsQuestionnaires'
-query_hash[:vbms] = 'serviceTreatmentRecords.subscriptions'
-query_hash[:ecfts] = 'electronicCaseFiles'
-query_hash[:immunizations] = 'immunizations'
-query_hash[:direct_msg] = 'directSecureMessaging.cda'
+  query_hash = {}
+  query_hash[:haims] = 'serviceTreatmentRecords' #midnight to midnight (all else use 0500 offset)
+  query_hash[:dbqs] = 'disabilityBenefitsQuestionnaires'
+  query_hash[:vbms] = 'serviceTreatmentRecords.subscriptions'
+  query_hash[:ecfts] = 'electronicCaseFiles'
+  query_hash[:immunizations] = 'immunizations'
+  query_hash[:direct_msg] = 'directSecureMessaging.cda'
 
-=begin
-def execute_query(url)
-  uri = URI.parse(url)
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  request = Net::HTTP::Get.new(uri.request_uri)
-  response = http.request(request)
-  data = response.body
-  JSON.parse(data)
-end
-=end
-
-=begin
-def date_range(rpt_sym, time)
-  if rpt_sym.eql?(:haims)
-    #   midnight-midnight current day
-    ret = [time.strftime('%Y-%m-%d') + 'T00:00:00Z', time.strftime('%Y-%m-%d') + 'T23:59:59Z']
-  else
-    #   processing windows 1900-0700
-    ret = [time.strftime('%Y-%m-%d') + 'T05:00:00Z', Time.at((time.to_i + 24*60*60)).strftime('%Y-%m-%d') + 'T05:00:00Z']
-  end
-  ret
-end
-
-=end
-=begin
-def process_rpt(query_hash)
-  reports = {}
-  (1..@@days_back).to_a.reverse.each do |day_index|
-    time = Time.at(@@rpt_date.to_i - 24*60*60*day_index)
-    reports[time] = {}
-
-    query_hash.each_pair do |rpt_sym, collection|
-      dates = date_range(rpt_sym, time)
-      esc_query = CGI::escape(QUERY).gsub!('--GTE_DATE--', dates[0]).gsub!('--LTE_DATE--', dates[1])
-      url = "#{HOST + QUERY_DB + collection}/count?query=#{esc_query}"
-      reports[time][rpt_sym] = execute_query(url)
-    end
-  end
-  reports
-end
-=end
-
-def build_rpt(date, rpt_hash)
-  template = %{
+  def build_rpt(date, rpt_hash)
+ %{
 <h4>#{date.strftime('%A %B %d, %Y')}</h4>
 <ul>
 <li>STRs: Downloaded #{rpt_hash[:haims]["count"] > 0 ? rpt_hash[:haims]["count"] : 'zero'} STR documents from HAIMS</li>
@@ -83,9 +44,9 @@ def build_rpt(date, rpt_hash)
 <li>Direct Secure Messaging Documents: Received #{rpt_hash[:direct_msg]["count"] > 0 ? rpt_hash[:direct_msg]["count"] : "zero"} DSM documents</li>
 </ul>
   }
-end
+  end
 
-TABLE = %{
+  TABLE = %{
   <div class="rpt">
   <div class="rpt_display">
   <table class="display"><tr><th width="275px" style="text-align: left"><br>Document Description</th><th>DATE</th><th>DATE</th><th>DATE</th><th>DATE</th><th>DATE</th><th>DATE</th><th>DATE</th></tr>
@@ -100,21 +61,24 @@ TABLE = %{
   </div>
 }
 
-def build_rpt_table(date, rpt_hash)
-  @final_rpt.sub!(/DATE/, date.strftime('%A<br>%b %d, %Y'))
-  @final_rpt.sub!(/_HAIMS/, rpt_hash[:haims]["count"].to_s)
-  @final_rpt.sub!(/_VBMS/, rpt_hash[:vbms]["count"].to_s)
-  @final_rpt.sub!(/_DBQS/, rpt_hash[:dbqs]["count"].to_s)
-  @final_rpt.sub!(/_ECFTS/, rpt_hash[:ecfts]["count"].to_s)
-  @final_rpt.sub!(/_IMMUNE/, rpt_hash[:immunizations]["count"].to_s)
-  @final_rpt.sub!(/_DSMDS/, rpt_hash[:direct_msg]["count"].to_s)
-end
+  def build_rpt_table(date, rpt_hash)
+    @final_rpt.sub!(/DATE/, date.strftime('%A<br>%b %d, %Y'))
+    @final_rpt.sub!(/_HAIMS/, rpt_hash[:haims]["count"].to_s)
+    @final_rpt.sub!(/_VBMS/, rpt_hash[:vbms]["count"].to_s)
+    @final_rpt.sub!(/_DBQS/, rpt_hash[:dbqs]["count"].to_s)
+    @final_rpt.sub!(/_ECFTS/, rpt_hash[:ecfts]["count"].to_s)
+    @final_rpt.sub!(/_IMMUNE/, rpt_hash[:immunizations]["count"].to_s)
+    @final_rpt.sub!(/_DSMDS/, rpt_hash[:direct_msg]["count"].to_s)
+  end
 
-@final_rpt = TABLE.clone
-process_rpt(query_hash).each_pair do |date, rpt_hash|
-  # @final_rpt << build_rpt(date, rpt_hash)
-  build_rpt_table(date, rpt_hash)
-end
+  prop_hash = get_prop_hash("./das_charting.properties", $logger)
+  @final_rpt = TABLE.clone
+  host = prop_hash["host"] #https://bhietestsapp4.vaco.va.gov/"
+  ecrud = prop_hash["ecrud"] #"ecrud/v1/core/"
+
+  process_rpt(query_hash, host, ecrud, @@days_back, @@rpt_date).each_pair do |date, rpt_hash|
+    build_rpt_table(date, rpt_hash)
+  end
 rescue => e
   @final_rpt = e.backtrace.join("\n")
 end
