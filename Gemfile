@@ -24,8 +24,9 @@ gem 'warbler'
 gem 'american_date'
 #From the following URL:
 #http://www.jetbrains.com/ruby/webhelp/run-debug-configuration-rails.html
-gem 'ruby-debug-base', '>= 0.10.5.rc3'
-gem 'ruby-debug-ide', '>= 0.4.17.beta14'
+
+# gem 'ruby-debug-base', '>= 0.10.5.rc3'
+# gem 'ruby-debug-ide', '>= 0.4.17.beta14'
 
 #gem 'protected_attributes'
 
