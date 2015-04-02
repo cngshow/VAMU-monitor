@@ -23,7 +23,6 @@ module ScriptingContainerHelper
   $SCRIPTING_CONTAINER_CLASSLOADERS={}
   @@container_mutex = Mutex.new
 
-
   #returns a scripting container in its own class loader
   #the class loader will be child first and will ensure any scripts executed cannot
   #monkey with SHAMU's memory space
@@ -34,7 +33,6 @@ module ScriptingContainerHelper
   def self.get_secluded_scripting_container(class_loader_tag="VANILLA")
     @@container_mutex.synchronize do
       child_first_clazz_loader = nil
-      container = nil
       if ($SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag].nil?)
         $logger.info("**************** Instantiating a new child first classloader for--->#{class_loader_tag}<----")
         jruby_jar = JFile.new(Rails.root.to_s + "/" + $application_properties['jruby_jar_complete']) #try me w/o the rails root.  Should work
@@ -50,18 +48,22 @@ module ScriptingContainerHelper
         clazz = child_first_clazz_loader.loadClass("org.jruby.embed.ScriptingContainer")
         constructor = clazz.getConstructor([local_context_enum].to_java Java::java.lang.Class)
         container = constructor.newInstance(local_context_scope_thread_safe)
+        $logger.debug("built a new container #{container.to_s}")
         container.setClassLoader(child_first_clazz_loader)
         container.setCurrentDirectory(Rails.root.to_s)
-        $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag] = [child_first_clazz_loader, container]
+        $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag] = [child_first_clazz_loader, local_context_scope_thread_safe, local_context_enum, clazz, constructor]
       else
         $logger.info("Reusing a child first classloader for #{class_loader_tag}")
         child_first_clazz_loader = $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag][0]
-        container = $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag][1]
+        local_context_scope_thread_safe = $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag][1]
+        local_context_enum = $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag][2]
+        constructor = $SCRIPTING_CONTAINER_CLASSLOADERS[class_loader_tag][4]
       end
       Thread.current[:initial_context_class_loader] = JThread.currentThread.getContextClassLoader
       Thread.current[:job_class_loader] = child_first_clazz_loader
-
-
+      container = constructor.newInstance(local_context_scope_thread_safe)
+      container.setClassLoader(child_first_clazz_loader)
+      container.setCurrentDirectory(Rails.root.to_s)
       unless $application_properties['GEM_HOME'].nil?
         environment = JHashMap.new(container.getEnvironment)
         environment.put('GEM_HOME', $application_properties['GEM_HOME'])
@@ -69,8 +71,8 @@ module ScriptingContainerHelper
       end
       Thread.current[:scripting_container] = container
       Thread.current[:java_current_thread] = JThread.currentThread
+      $logger.debug("------------returning container #{container.to_s}")
       return container
     end
   end
-
 end

@@ -51,6 +51,7 @@ class JobEngine
   end
 
   def run_scheduled_job(request)
+    $logger.debug("run_scheduled_job called for #{request}")
 
     return if !started?
     #most request will answer questions like, "What are the credentials?".
@@ -919,6 +920,7 @@ class JobEngine
         Thread.current[:java_current_thread].setContextClassLoader(Thread.current[:job_class_loader])
         r_val = container.runScriptlet($2)
         Thread.current[:java_current_thread].setContextClassLoader(Thread.current[:initial_context_class_loader])
+        container.terminate
        # ScriptingContainerHelper::clear_thread_locals()
         $logger.debug("secluded run returning #{r_val}")
         return r_val
@@ -956,6 +958,7 @@ class JobEngine
             Thread.current[:java_current_thread].setContextClassLoader(Thread.current[:job_class_loader])
             output = container.runScriptlet(script).to_s
             Thread.current[:java_current_thread].setContextClassLoader(Thread.current[:initial_context_class_loader])
+            container.terminate
             #ScriptingContainerHelper::clear_thread_locals()
             $logger.debug("The output is:")
             $logger.debug(output)
@@ -1002,6 +1005,7 @@ class JobEngine
     container.resetWriter
     container.resetErrorWriter
     container.runScriptlet(script)
+    container.terminate
     output = writerSTD.getBuffer.toString
     error  = writerERR.getBuffer.toString
     if (!error.nil? && !error.empty?)

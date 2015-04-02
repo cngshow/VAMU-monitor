@@ -5,7 +5,7 @@ development:
     default:
       # Defines the name of the default database that Mongoid can connect to.
       # (required).
-      database: pst_dashboard_development
+      database: vamu_das_dev
       # Provides the hosts the default session can connect to. Must be an array
       # of host:port pairs. (required)
       hosts:
@@ -61,7 +61,7 @@ development:
 test:
   sessions:
     default:
-      database: pst_dashboard_test
+      database: vamu_das_test
       hosts:
         - localhost:27017
       options:
@@ -84,7 +84,7 @@ production:
       hosts:
        # - flame.mongohq.com:27017
       # Define the default database name.
-      database: mongoid
+      database: vamu_das_prod
       # Since this database points at a session connected to MongoHQ, we must
       # provide the authentication details.
       username: user

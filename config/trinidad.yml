@@ -1,5 +1,5 @@
-  address: 0.0.0.0 # set to '*' to bind to all interfaces
-  port: 3000 # port where Trinidad is running
+  address: 0.0.0.0 # set to '*' to bind to all interfaces (0.0.0.0 ALLOWS the outside world to hit it. localhost only allows access from that box)
+  port: 30000 # port where Trinidad is running
   environment: development # specify with `trinidad -e production`
   #environment: test # specify with `trinidad -e production`
   #environment: production # specify with `trinidad -e production`
@@ -44,7 +44,9 @@
   java_classes: lib/java/classes # directory where compiled java classes can be found
   default_web_xml: config/trinidad-web.xml # if you are using a custom web.xml
   reload_strategy: default # alternatively you might use "rolling"
-  monitor: c:/temp/restart.txt
+#  monitor: c:/temp/restart.txt
+  monitor: /tmp/vamu_restart.txt
+
   #
   # End: Configuration options that can be overrided per web-application
   #
