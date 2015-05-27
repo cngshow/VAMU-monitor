@@ -80,17 +80,46 @@ class JobLogEntriesController < ApplicationController
   end
 
   def show
-    @job_log_entry = JobLogEntry.find(params[:id])
+    show_jle(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml { render :xml => @job_log_entry }
+    end
+  end
+
+  def show_jle(jle_id)
+    @job_log_entry = JobLogEntry.find(jle_id)
     jc = @job_log_entry.job_code
     @jmd = JobMetadata.job_code(jc)[0]
     @page_hdr = "Job Log Listing for:  " + jc
     @page_nav = [{:label => 'Back to Job Log', :route => job_log_list_path}]
     @page_nav.push({:label => 'Back To Trackables', :route => trackables_path}) if @jmd.track_status_change
     @page_nav.push({:label => "Edit Job", :route => job_metadatas_edit_path(@jmd.id)}) if admin_check?
+  end
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml { render :xml => @job_log_entry }
+  def last_job_run
+    jc = params[:job_code]
+    jmds = JobEngine.instance.get_job_meta_datas
+    jle_id = nil
+
+    if (jmds.map(&:job_code).include?(jc))
+      jmd = JobMetadata.job_code(jc).first
+      jle_id = jmd.last_jle_id
+    end
+
+    if (jle_id.nil?)
+      jmds.reject! {|jmd| jmd.last_jle_finish_time.nil?}
+      jmds.sort! {|x,y| x.last_jle_finish_time <=> y.last_jle_finish_time }
+      jle_id = jmds[-1].last_jle_id
+    end
+
+    # if we have a jle_id then call the show method to render the JLE otherwise redirect to the home page
+    if jle_id.nil?
+      redirect_to '/'
+    else
+      show_jle(jle_id)
+      render :show
     end
   end
 
