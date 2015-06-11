@@ -1,0 +1,36 @@
+This data is ignored but in mongo
+1
+fkjkfkfjkfj__BEGIN_MULTIPLE_JOB_RESULT__
+I am data set 0
+dat set 0 is marvelous!
+__END_MULTIPLE_JOB_RESULT__
+
+This data is ignored but in mongo
+2
+__BEGIN_MULTIPLE_JOB_RESULT__
+I am data set 1
+dat set 1 is twice as marvelous!
+__END_MULTIPLE_JOB_RESULT__v
+
+This data is ignored but in mongo
+3
+__BEGIN_MULTIPLE_JOB_RESULT__
+
+
+I am data set 2
+dat set 2 is thrice as marvelous!
+
+
+__END_MULTIPLE_JOB_RESULT__flkflkflk
+
+This data is ignored but in mongo
+4
+__BEGIN_MULTIPLE_JOB_RESULT__
+
+I am data set 3
+dat set 3 is the most marvelous!
+
+__END_MULTIPLE_JOB_RESULT__
+
+This data is ignored but in mongo
+5

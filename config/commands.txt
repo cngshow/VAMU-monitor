@@ -58,3 +58,5 @@ TEST_RED_GREEN, echo EMAIL_RESULT_ABOVE:
 !mongo_shell = echo C:\mongodb2.6\bin\mongo.exe --nodb --quiet
 
 MONGO_ALERT1, !mongo_shell !mongo_alert_args !mongo_script
+
+TEST_MULTIPLE, cat ./jobs/multiple_test.txt

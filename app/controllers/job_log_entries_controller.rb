@@ -123,6 +123,14 @@ class JobLogEntriesController < ApplicationController
     end
   end
 
+  def show_jle_multiple_result
+    jle_id = params[:id]
+    result_index = params[:result_index].to_i
+    @job_log_entry = JobLogEntry.find(jle_id)
+    @result = @job_log_entry.job_result(result_index)
+    render :multiple, layout: false
+  end
+
   def email_user
     raise "You are not logged in!" if current_user.nil?
     @job_log_entry = JobLogEntry.find(params[:id])

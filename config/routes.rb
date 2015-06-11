@@ -31,6 +31,8 @@ PSTDashboard::Application.routes.draw do
   match  '/trackables' => 'job_metadatas#trackables', :as => :trackables, via: [:get, :post]
   match  '/trackables_refresh' => 'job_metadatas#auto_refresh', :as => :trackables_refresh, via: [:get, :post]
 
+  match  '/view_multiple/:id/:result_index' => 'job_log_entries#show_jle_multiple_result', :as => :show_jle_multiple_result, via: [:get]
+
   #android_demo
   get '/android_demo' => 'android_demo#index', :as => :android_demo_index
 

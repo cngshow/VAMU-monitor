@@ -56,6 +56,24 @@ class JobLogEntry
 
   @@xml_template = Utilities::FileHelper.file_as_string('./config/IntroscopeAlerts.xml.template')
 
+
+  #zero based
+  def job_result(result_index = 0)
+    multiple_regex = $application_properties['job_result_multiple']
+    results = []
+    true_jobs_result = read_attribute(:job_result)
+    if (true_jobs_result =~ /#{multiple_regex}/m)
+      results = true_jobs_result.scan(/#{multiple_regex}/m)
+      return results[result_index][0]
+    end
+
+    return true_jobs_result
+  end
+
+  def true_job_result
+    read_attribute(:job_result)
+  end
+
   #return nil if jle has a status of green
   def get_escalation
     escalations = JobMetadata.job_code(job_code)[0].escalations
