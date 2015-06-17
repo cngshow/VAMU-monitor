@@ -1,0 +1,83 @@
+<script>
+    function drawPieCharts() {
+        <% pts = disk_space_points(@doc) %>
+        var configCore = {
+            data: [['Used Disk Space', <%= pts[:audit][:used]%>], ['Available Disk Space', <%=pts[:audit][:avail]%>]],
+            div: "audit_pie_div",
+            name: "Audit",
+            capacity: "5.1 TB"
+        };
+        drawPieStorage(configCore);
+
+        var configCore = {
+            data: [['Used Disk Space', <%= pts[:core][:used]%>], ['Available Disk Space', <%=pts[:core][:avail]%>]],
+            div: "core_pie_div",
+            name: "Core",
+            capacity: "20 TB"
+        };
+        drawPieStorage(configCore);
+    }
+
+    function drawPieStorage(config) {
+        console.log(config);
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Disk Space');
+        data.addColumn('number', 'TB');
+
+        data.addRows(config.data);
+
+        var options = {
+            title: 'DAS Data Store: ' + config.name,
+            is3D: true,
+            slices: {
+                0: {offset: 0.4, textStyle: {fontSize: 16, bold: true}},
+                1: {color: 'lightsteelblue', textStyle: {color: 'black', fontSize: 16, bold: true}}
+            },
+            pieStartAngle: 60,
+            titleTextStyle: {fontSize: 18}
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById(config.div));
+        chart.draw(data, options);
+    }
+</script>
+
+
+
+<style>
+    .pieCart {
+        width: 49.5%; height: 95%; float: left;
+        border: 1px solid #16365D;
+    }
+</style>
+<%
+   # get the storage usage points in order to build the reporting verbiage
+   pts_array = charting_data_points(:storage_chart, @doc)
+   p = pts_array[0][:core][:used]#C prev
+   c = pts_array[1][:core][:used]#C current
+   i = (c - p) * 1024.0
+   p = pts_array[0][:audit][:used]#L prev
+   c = pts_array[1][:audit][:used]#L current
+   p = (c - p) * 1024.0
+   r = (i + p)
+
+   charting_data_points(:storage_chart_cris, @doc)
+%>
+
+<span class="subsection_hdr">Overall Capacity utilization of DAS Data Store:</span><br>
+<%= format_date(@rpt_date, SHORT_DATE) %>: Additional storage consumed:&nbsp;&nbsp;&nbsp;&nbsp;<%= "#{'%.1f' % r}" %> GB total&nbsp;&nbsp;(Core:&nbsp;<%= "#{'%.1f' % i}" %>
+GB;&nbsp;&nbsp;Audit:&nbsp;<%= "#{'%.1f' % p}" %> GB)<br><br>
+The chart below reflects the total storage consumed by the various DAS applications, including STRs and DBQs:<br><br>
+
+<div style="width: 97%; height: 350px; background-color:#16365D; color:white; border: 12px solid #16365D;">
+  <div style="color:white; float: left; width: 100%; padding-bottom: 4">
+    <div style="float: left; width: 80%;">DAS Data Store: Phase II - Capacity & Usage Statistics</div>
+    <div style="float: right;">Through <%= format_date(@doc[:_id]) %></div>
+  </div>
+  <div id="core_pie_div" class="pieCart"></div>
+  <div id="audit_pie_div" class="pieCart"></div>
+</div>
+
+
+<img src="<%=@pie_storage_core%>"/>
+<img src="<%=@pie_storage_audit%>"/>

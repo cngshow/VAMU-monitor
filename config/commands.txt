@@ -21,7 +21,7 @@
 !jruby_runner = echo RUBY_EVAL_FILE_VANILLA
 !html_header = echo ./public/shamu_header.html
 !html_footer = echo ./public/shamu_footer.html
-
+!environment = RUBY_EVAL_CODE Rails.env
 
 ###########################################################
 # VDAS_QUICKSTATS report
@@ -60,3 +60,14 @@ TEST_RED_GREEN, echo EMAIL_RESULT_ABOVE:
 MONGO_ALERT1, !mongo_shell !mongo_alert_args !mongo_script
 
 TEST_MULTIPLE, cat ./jobs/multiple_test.txt
+
+!daily_rpt_rb ==> DAILY_REPORT_TEST, DAILY_REPORT_DATA_LOAD = echo ./jobs/reports/das/daily_report/daily_report.rb
+#!daily_rpt_date_arg ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
+!daily_rpt_date_arg ==> DAILY_REPORT_TEST = echo DAILY_RUN
+#ARG_DEFINITION|Daily STR DBQ Report Date|Enter in the reporting date yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
+!daily_report_html ==> DAILY_REPORT_TEST = echo ./jobs/reports/das/daily_report/output.html
+!jle_id ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE JobLogEntry.job_code('DAILY_REPORT_TEST').finished(false).last.id
+!root_url ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE $application_properties['root_url']
+
+DAILY_REPORT_TEST, java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment
+

@@ -1,0 +1,167 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <style>
+      .subsection_hdr {
+          font-weight: bold;
+          text-decoration: underline;
+      }
+
+      .updated_total_hdr {
+          font-style: italic;
+          margin-left: 25px;
+      }
+
+      div#rpt p {
+          font-family: Verdana, Geneva, sans-serif;
+          font-size: 12px;
+      }
+
+      div#main {
+          width: 100%;
+          height: 95%;
+          color: #000077;
+      }
+
+      table {
+          font-family: Verdana, Geneva, sans-serif;
+          font-size: 12px;
+          color: #000077;
+      }
+
+      li {
+          font-family: Verdana, Geneva, sans-serif;
+          font-size: 12px;
+          color: #000077;
+      }
+
+      td {
+          text-align: right;
+      }
+  </style>
+  <script>
+      google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+      google.setOnLoadCallback(drawCharts);
+
+      function drawCharts() {
+          drawPieCharts();
+
+//          these are in the dbq chart - see if you can move these calls there!
+          drawDBQStacked();
+          drawDBQBarChart();
+          drawSTRAuditCharts();
+          drawSTRDownloadsBarChart();
+          drawSTRDownloadsColumnChart();
+          drawSTRDownloadSizeScatter();
+      }
+  </script>
+</head>
+<body>
+<%
+   @rpt_date = @doc[:_id]
+%>
+<div id="main">
+  <div id="rpt" style="margin: 15px;">
+    <h2>Team - a quick status on DAS STR & DBQ activity since the last report:</h2>
+
+    <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %>:</h3>
+
+    <p>
+      <span class="subsection_hdr">STRs:</span><br>
+      <%= format_date(@rpt_date, SHORT_DATE) %>: DAS received
+      <span class="subsection_hdr"><%= format_number(@doc[:str][:yesterday_count]) %></span> STR documents
+      (for <%= format_number(@doc[:str][:yesterday_vet_count]) %> Veterans) from HAIMS. The total processing time
+      (hh:mm:ss) was <%= @doc[:audit][:breakdown][:tot_trans_time] %>
+      (for <%= format_number(@doc[:audit][:breakdown][:pass1_count] + @doc[:audit][:breakdown][:pass2_count]) %>
+      transactions with HAIMS
+      [first-pass: <%= format_number(@doc[:audit][:breakdown][:pass1_count]) %>;
+      second-pass: <%= format_number(@doc[:audit][:breakdown][:pass2_count]) %>]).
+      <br>
+      <br>
+      <span class="updated_total_hdr">Updated total counts:</span><br>
+    <table>
+      <tr>
+        <td width="60%">The total number of STR subscriptions is:</td>
+        <td width="30%"><%= format_number(@doc[:str][:tot_subscriptions]) %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The number of 'complete' STRs received (w/ Cert Memo):</td>
+        <% pct = @doc[:str][:admin_doc_vet]/(@doc[:str][:tot_subscriptions].to_f) * 100 %>
+        <td width="30%"><%= "#{format_number(@doc[:str][:admin_doc_vet])} (#{pct.round(1)}%)" %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The number of 'partial' STRs (one or more STR documents, no Cert Memo):</td>
+        <%
+           nbr = @doc[:str][:tot_str_vet_count] - @doc[:str][:admin_doc_vet]
+           pct = nbr/(@doc[:str][:tot_str_vet_count].to_f) * 100
+        %>
+        <td width="30%"><%= "#{format_number(nbr)} (#{pct.round(1)}%)" %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The number of STR subscriptions with no documents:</td>
+        <%
+           nbr = @doc[:str][:tot_subscriptions] - @doc[:str][:tot_str_vet_count]
+           pct = nbr/(@doc[:str][:tot_subscriptions].to_f) * 100
+        %>
+        <td width="30%"><%= "#{format_number(nbr)} (#{pct.round(1)}%)" %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The total number of STR Documents in the collection is:</td>
+        <td width="30%"><%= format_number(@doc[:str][:tot_str_count]) %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The total size of the STR Documents in the collection is:</td>
+        <td width="30%"><%= "#{(@doc[:str][:tot_str_attachments]/(1024.0**3)).round(2)} GB" %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+    </table>
+    <br style="clear: left;"/>
+    </p>
+    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb')%>
+    <p>
+      <span class="subsection_hdr">DBQs:</span><br>
+      <%= format_date(@rpt_date, SHORT_DATE) %>: DAS received a total of <%= format_number(@doc[:dbq][:das_count]) %>
+      DBQs:<br>
+    <ul>
+      <li><%= format_number(@doc[:dbq][:das_line]) %></li>
+      <li><%= format_number(@doc[:dbq][:capri_line]) %></li>
+      <li><%= format_number(@doc[:dbq][:external_vendor_line]) %></li>
+    </ul>
+    </p>
+    <p>
+      <span class="updated_total_hdr">Updated total counts:</span><br>
+    <table>
+      <tr>
+        <td width="60%">The total number of DBQ Documents in the current collection is:</td>
+        <td width="30%"><%= format_number(@doc[:dbq][:completed_count]) %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">The total number of DBQ Documents in prior Oracle DB:</td>
+        <td width="30%"><%= format_number(16447) %></td>
+        <td width="10%">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="60%">Cumulative number of DBQ Documents available in DAS:</td>
+        <td width="30%"><%= format_number(@doc[:dbq][:completed_count] + 16447) %></td>
+        <!-- change this to use same field as dbq?!-->
+        <td width="10%">&nbsp;</td>
+      </tr>
+    </table>
+
+    </p>
+    <%= render_erb('./jobs/reports/das/daily_report/dbq_chart.html.erb') %>
+    <br>
+    <br>
+    <%= render_erb('./jobs/reports/das/daily_report/data_storage.html.erb') %>
+
+  </div>
+</div>
+
+</body>
+</html>

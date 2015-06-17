@@ -130,7 +130,8 @@
 	                            <td width="50%" valign="top">
 	                                <%= f.label :attachment_path, "Attachment File Path:" %>
 	                                <br/>
-	                                <%= f.text_area :attachment_path, :cols=>40, :rows=>3, :onfocus => 'resizeTA(this, true);', :onblur => 'resizeTA(this);', :id => 'attachment_path', :readonly => ! @job_metadata.incl_attachment %>
+	                                <%= f.text_area :attachment_path, :cols=>40, :rows=>3, :onfocus => 'resizeTA(this, true);', :onblur => 'resizeTA(this);', :id => 'attachment_path' %>
+                                  <!--, :readonly => ! @job_metadata.incl_attachment-->
 	                            </td>
 	                        </tr>
 	                    </table>
