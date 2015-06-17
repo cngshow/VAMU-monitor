@@ -1,5 +1,5 @@
   address: 0.0.0.0 # set to '*' to bind to all interfaces (0.0.0.0 ALLOWS the outside world to hit it. localhost only allows access from that box)
-  port: 30000 # port where Trinidad is running
+  port: 3000 # port where Trinidad is running
   environment: development # specify with `trinidad -e production`
   #environment: test # specify with `trinidad -e production`
   #environment: production # specify with `trinidad -e production`
