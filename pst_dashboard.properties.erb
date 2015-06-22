@@ -1,0 +1,131 @@
+########################################################################################################################
+#common properties
+########################################################################################################################
+jruby_jar_complete = ./lib/jars/jruby-complete-1.7.13.jar
+ruby_cron=./config/schedule.rb
+commands_txt=./config/commands.txt
+
+#true to start job engine.  All other values are false.
+#./config/audit_log_credentials.properties must be setup
+start_job_engine_on_deployment=true
+max_job_engine_start_attempts=25
+seconds_between_start_job_engine_attempt=30
+
+#this property is for orphaned jobs in minutes
+job_runaway_after=5
+
+#maximum number of synchronously running jobs
+max_jobs=25
+
+#job_check_interval_seconds, this is how often the job watchdog wakes up and checks for jobs that need a killing!
+job_check_interval_seconds=60
+
+#below defines what a trackable script will output for red vs green
+red=__RED_LIGHT__
+green=__GREEN_LIGHT__
+run_data=RUN_DATA_BEGIN_(.*)_RUN_DATA_END
+introscope_data=INTROSCOPE_DATA_BEGIN_(.*)_INTROSCOPE_DATA_END
+job_result_multiple=__BEGIN_MULTIPLE_JOB_RESULT__(.*?)__END_MULTIPLE_JOB_RESULT__
+trackables_path=/trackables
+
+# service request subject preamble
+service_subject=Service Request:
+
+#time in days for default jle searching start date
+jle_default_start_search=1
+
+# is this used?
+job_log_entry_path=/job_log_entry
+temp_file_marker=_dev_
+
+# environment specific?
+use_https=false
+
+########################################################################################################################
+# escalations
+########################################################################################################################
+#GREEN is an illegal color name!!!!
+#the red color must be defined.
+#format is color1=>color1_code,priority1; color2=>color2_code;priority2 ...
+#red must be the highest priority.
+#the below script must be run, from rails root, each time changes are made to the property below.
+# ./script/runner -e production "JobMetadata.ensure_escalations_present"
+#./script/runner -e development "JobMetadata.ensure_escalations_present"
+#escalation_colors=Yellow => #FFFF00,2; Orange => #3333FF,1; red=>#FF0033,3
+escalation_colors= Blue => #3333FF,1; Yellow => #FFFF00,2; red=>#FF0033,3
+
+# 1 is reserved for Green
+introscope_colors= Yellow =>2, Blue =>2,Red => 3, gray =>3, unknown =>4
+
+########################################################################################################################
+# whenever setup
+########################################################################################################################
+whenever_success= ## [message] Above is your schedule file converted to cron syntax; your crontab file was not updated.
+whenever_split = /bin/bash -l -c
+
+#in minutes below
+inactivity_time_out=1
+whenever_backup_file=./config/schedule.rb.bak
+
+########################################################################################################################
+# environment specific setup (development, test, or production)
+########################################################################################################################
+<%
+   env_hash = {}
+   environment = Rails.env.to_sym
+   case environment
+     when :development
+       #log levels are DEBUG,INFO, WARN, ERROR, FATAL
+       env_hash[:log_level] = 'DEBUG'
+       env_hash[:mail_log_level] = 'ERROR'
+       env_hash[:root_url] = 'http://localhost:3000'
+       env_hash[:run_data_stale_after_minutes] = 0
+       env_hash[:vamu_version] = '7.1.36_development'
+       env_hash[:vamu_email_sender] = 'vamu_development@va.gov'
+
+       #call to System.gc every gc_interval number of seconds when the job engine is started
+       env_hash[:gc_interval] = 60
+
+     when :test
+       env_hash[:log_level] = 'DEBUG'
+       env_hash[:mail_log_level] = 'ERROR'
+       env_hash[:root_url] = 'http://vhamwvdevdasch7.vaco.va.gov:30000'
+       env_hash[:run_data_stale_after_minutes] = 30
+       env_hash[:vamu_version] = '7.1.36_test'
+       env_hash[:vamu_email_sender] = 'vamu_test@va.gov'
+       env_hash[:gc_interval] = 'NO GC'
+     else #production
+       env_hash[:log_level] = 'ERROR'
+       env_hash[:mail_log_level] = 'ERROR'
+       env_hash[:root_url] = 'http://vhamwvdevdasch7.vaco.va.gov:30000'
+       env_hash[:run_data_stale_after_minutes] = 60
+       env_hash[:vamu_email_sender] = 'vamu_production@va.gov'
+       env_hash[:gc_interval] = 'NO GC'
+       env_hash[:vamu_version] = '7.1.36_production'
+   end
+%>
+<% env_hash.each_pair do |k,v| %>
+    <%= "#{k.to_s}=#{v.to_s}" %>
+<%end%>
+
+<!-- platform specific properties-->
+<% if OS.linux? %>
+    platform_plink_path=/usr/apps/vamu/putty-0.64/unix/plink
+    java_home_env=$JAVA_HOME
+<% else %>
+    platform_plink_path=c:\putty\plink
+    java_home_env=%JAVA_HOME%
+<% end %>
+
+########################################################################################################################
+# miscellaneous
+########################################################################################################################
+# how we used to make whenever work on windows
+#=java -jar ./lib/jars/jruby-complete-1.7.13.jar ./gem_home/bin/whenever --load-file ./config/schedule.rb
+
+#beta testing maintenance - ENSURE NO SPACES BETWEEN ENTRIES
+beta_controllers=Nada
+beta_users=greg,cris,julianjewel,vhaislvalenj,david,paul
+
+#Threadpool will hunt for defunct entries in the database and clean them out.  In seconds
+#jle_cleanup = 135

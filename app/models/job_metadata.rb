@@ -172,7 +172,7 @@ class JobMetadata
   end
 	#called by a runner task
 	def self.ensure_escalations_present(trackable_only = true)
-		$application_properties = PropLoader.load_properties('./pst_dashboard.properties')
+		# $application_properties = PropLoader.load_properties('./pst_dashboard.properties')
 		#jmds = JobMetadata.where(track_status_change: true) if trackable_only
 
     #jmds = find(:all) unless trackable_only

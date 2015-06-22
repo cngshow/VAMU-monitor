@@ -1,5 +1,6 @@
 <html>
 <head>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <style>
       div#rpt p {
           font-family: Verdana, Geneva, sans-serif;
@@ -18,7 +19,7 @@
           border: 1px solid #A9A9A9;
           border-collapse: collapse;
       }
-      .strDbqTable th, .strDbqTable td {
+      .strDbqTable th, td {
           padding: 10px;
           text-align: center;
           border: 1px solid #A9A9A9;
@@ -43,6 +44,22 @@
           border: 1px solid black;
       }
   </style>
+  <script>
+      google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+      google.setOnLoadCallback(drawCharts);
+
+      function drawCharts() {
+          drawPieCharts();
+
+//          these are in the dbq chart - see if you can move these calls there!
+          drawDBQStacked();
+          drawDBQBarChart();
+          drawSTRAuditCharts();
+          drawSTRDownloadsBarChart();
+          drawSTRDownloadsColumnChart();
+          drawSTRDownloadSizeScatter();
+      }
+  </script>
 </head>
 <body>
 <%
@@ -51,10 +68,9 @@
 <div id="main">
   <div id="rpt" style="margin: 15px;">
     <h2>Team - a quick status on DAS STR & DBQ activity since the last report:</h2>
+
     <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %>:</h3>
-    <a href="<%=@rpt_link_url%>">Click here to view the charts in the browser</a>
-    <br>
-    <br>
+
     <table class="strDbqTable" style="width:750px">
       <caption>STRs Documents Received from HAIMS: <%= format_date(@rpt_date, SHORT_DATE) %></caption>
       <tr>
@@ -99,9 +115,9 @@
         </td>
         <td>
           <%
-             nbr = @doc[:str][:tot_subscriptions] - @doc[:str][:tot_str_vet_count]
-             pct = nbr/(@doc[:str][:tot_subscriptions].to_f) * 100
-          %>
+           nbr = @doc[:str][:tot_subscriptions] - @doc[:str][:tot_str_vet_count]
+           pct = nbr/(@doc[:str][:tot_subscriptions].to_f) * 100
+        %>
           <%= "#{format_number(nbr)} (#{pct.round(1)}%)" %>
         </td>
         <td><%= format_number(@doc[:str][:tot_subscriptions]) %></td>
@@ -109,6 +125,8 @@
         <td><%= "#{(@doc[:str][:tot_str_attachments]/(1024.0**3)).round(2)}" %></td>
       </tr>
     </table>
+    <br><br>
+    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb')%>
     <br><br>
     <table class="strDbqTable" style="width:750px">
       <caption>DBQ Daily Summary: <%= format_date(@rpt_date, SHORT_DATE) %></caption>
@@ -159,32 +177,12 @@
       </tr>
     </table>
     <br><br>
-    <%
-       # get the storage usage points in order to build the reporting verbiage
-       pts_array = charting_data_points(:storage_chart, @doc)
-       p = pts_array[0][:core][:used]#C prev
-       c = pts_array[1][:core][:used]#C current
-       i = (c - p) * 1024.0
-       p = pts_array[0][:audit][:used]#L prev
-       c = pts_array[1][:audit][:used]#L current
-       p = (c - p) * 1024.0
-       r = (i + p)
-    %>
+    <%= render_erb('./jobs/reports/das/daily_report/dbq_chart.html.erb') %>
     <br><br>
-    <table class="strDbqTable" style="width:485px">
-      <caption>Overall Capacity Utilization of DAS Data Store: <%= format_date(@rpt_date, SHORT_DATE) %></caption>
-      <tr>
-        <th>Core Collection</th>
-        <th>Audit Collection</th>
-        <th>Total Storage</th>
-      </tr>
-      <tr>
-        <td><%= "#{'%.1f' % i}" %> GB</td>
-        <td><%= "#{'%.1f' % p}" %> GB</td>
-        <td><%= "#{'%.1f' % r}" %> GB</td>
-      </tr>
-    </table>
+    <%= render_erb('./jobs/reports/das/daily_report/data_storage2.html.erb') %>
+    <br><br>
   </div>
 </div>
+
 </body>
 </html>

@@ -30,11 +30,11 @@ java.lang.System.getProperties['user.dir'] = Rails.root.to_s
 
 begin
   if $application_properties.nil?
-    $application_properties = PropLoader.load_properties('./pst_dashboard.properties')
+    $application_properties = PropLoader.load_properties_from_erb
     $logger.debug("Application properties loaded successfully.")
   end
 rescue
-  $logger.error "Failed to load ./pst_dashboard.properties "<< $!.to_s
+  $logger.error "Failed to load ./pst_dashboard.properties.erb "<< $!.to_s
   $logger.error "Terminating Application server!"
   Process.exit
 end

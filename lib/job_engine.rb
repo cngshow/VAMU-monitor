@@ -265,7 +265,7 @@ class JobEngine
        # @job_pool.start_cleanup
 
         #start the job engine
-        $application_properties = PropLoader.load_properties('./pst_dashboard.properties')
+        $application_properties = PropLoader.load_properties_from_erb
         JobEngine.instance.set_schedule
         gc_interval = nil
         begin
@@ -637,7 +637,6 @@ class JobEngine
       $logger.debug("The output for job_code #{jmd.job_code} does not have valid e-mail output!")
       return
     end
-    $logger.error("The output for job_code #{jmd.job_code} does have valid e-mail output!  See the rails log for details")
     body = match[1]
     #get the subject from the body
     match = Regexp.new('SUBJECT:(.*)').match(body)

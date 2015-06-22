@@ -22,6 +22,7 @@
 !html_header = echo ./public/shamu_header.html
 !html_footer = echo ./public/shamu_footer.html
 !environment = RUBY_EVAL_CODE Rails.env
+!java_home_env = RUBY_EVAL_CODE $application_properties['java_home_env']
 
 ###########################################################
 # VDAS_QUICKSTATS report
@@ -68,6 +69,6 @@ TEST_MULTIPLE, cat ./jobs/multiple_test.txt
 !daily_report_html ==> DAILY_REPORT_TEST = echo ./jobs/reports/das/daily_report/output.html
 !jle_id ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE JobLogEntry.job_code('DAILY_REPORT_TEST').finished(false).last.id
 !root_url ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE $application_properties['root_url']
+!plink ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE $application_properties['platform_plink_path']
 
-DAILY_REPORT_TEST, java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment
-
+DAILY_REPORT_TEST, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment !plink 2>&1

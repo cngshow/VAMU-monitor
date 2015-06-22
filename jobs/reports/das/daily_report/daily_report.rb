@@ -1,11 +1,13 @@
 require 'json'
 require './jobs/helpers/mongo_job_connector'
 require './jobs/helpers/report_helper'
+require './jobs/helpers/job_utility'
 require './jobs/reports/das/daily_report/daily_report_helper'
 require 'date'
 require 'erb'
 include MongoJobConnector
 include ReportHelper
+include JobUtility
 include DailyReportHelper
 
 rpt_date = ARGV[0]
@@ -19,6 +21,7 @@ end
 @root_url = ARGV[2]
 @jle_id = ARGV[3]
 env = ARGV[4].to_sym
+@plink = ARGV[5]
 
 @rpt_link_url = "#{@root_url}/view_multiple/#{@jle_id}/1"
 
@@ -41,8 +44,8 @@ def write_rpt_data(rpt_date)
     rpt_date = format_date(rpt_date, RPT_DATE)
   end
 
-  putty = %{c:\\putty\\plink dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./dailyReports-gpb.py '#{rpt_date}'\"}
-  str = `#{putty}`
+  putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./dailyReports-gpb.py '#{rpt_date}'\"}
+  str = backtick(putty)
   str = str.split("\n")
 
   data_hash = {}
@@ -124,8 +127,8 @@ def write_rpt_data(rpt_date)
     end
   end
 
-  putty = %{c:\\putty\\plink dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./storageSizeLogStat.py '#{rpt_date}'\"}
-  str = `#{putty}`
+  putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./storageSizeLogStat.py '#{rpt_date}'\"}
+  str = backtick(putty)
   str = str.split("\n")
 
   storage_data = []
@@ -155,6 +158,7 @@ def write_report(doc)
   render_erb('./jobs/reports/das/daily_report/daily_rpt_email_result.html.erb', {multi_result: true, email_subject: "STR & DBQ Status for: #{@doc[:rpt_date_string]}"})
   rpt_result = render_erb('./jobs/reports/das/daily_report/daily_report.html.erb', {multi_result: true})
   File.open(@rpt_output_html, 'w') { |file| file.write(rpt_result) }
+  render_erb('./jobs/reports/das/daily_report/daily_report2.html.erb', {multi_result: true})
 end
 
 def get_rpt_data(rpt_date)
@@ -288,7 +292,7 @@ def dbq_data
 end
 
 def run_report(rpt_date = nil)
-  init_load_collection(75) if call_init_collection?
+  init_load_collection(85) if call_init_collection?
 
   if rpt_date
     doc = get_rpt_data(rpt_date)
@@ -311,6 +315,12 @@ def str_scatter_plot_query(rpt_date, limit = 1500)
       .limit(limit)
 end
 #mongoimport --vamu_audit_db job_data_development --collection audit_pass --fields dt, status, response, size, pass --type csv --file "C:\Users\VHAISPBOWMAG\Desktop\DAS-reports\STR DQB Daily Reports\STR Audit Daily Master\STR Daily Audit Logs\STR_daily_audit-2015-05-13.txt"
+
+current = Time.now
+if rpt_date && get_gmt(rpt_date) >= Time.gm(current.year, current.month, current.day)
+  puts "Illegal report date entered. You cannot run this report for today or a future date."
+  return
+end
 
 run_report(rpt_date)
 puts get_multi_result

@@ -80,6 +80,7 @@ GEM
     orderedhash (0.0.6)
     origin (2.1.1)
     orm_adapter (0.5.0)
+    os (0.9.6)
     polyglot (0.3.5)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -158,6 +159,7 @@ DEPENDENCIES
   log4r
   mongoid (~> 4.0.0)
   orderedhash
+  os
   rails (~> 4.0.4)
   rake
   sass-rails (~> 4.0.0)

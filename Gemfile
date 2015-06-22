@@ -7,6 +7,7 @@ gem 'rails', '~> 4.0.4'
 
 #gem 'mongo_mapper'
 gem "mongoid", "~> 4.0.0"
+gem 'os'
 
 gem 'json'
 gem 'trinidad', :require => nil

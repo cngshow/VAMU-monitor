@@ -42,8 +42,6 @@
     }
 </script>
 
-
-
 <style>
     .pieCart {
         width: 49.5%; height: 95%; float: left;
@@ -61,10 +59,21 @@
    p = (c - p) * 1024.0
    r = (i + p)
 %>
-
-<span class="subsection_hdr">Overall Capacity utilization of DAS Data Store:</span><br>
-<%= format_date(@rpt_date, SHORT_DATE) %>: Additional storage consumed:&nbsp;&nbsp;&nbsp;&nbsp;<%= "#{'%.1f' % r}" %> GB total&nbsp;&nbsp;(Core:&nbsp;<%= "#{'%.1f' % i}" %>
-GB;&nbsp;&nbsp;Audit:&nbsp;<%= "#{'%.1f' % p}" %> GB)<br><br>
+<br><br>
+<table class="strDbqTable" style="width:485px">
+  <caption>Overall Capacity Utilization of DAS Data Store: <%= format_date(@rpt_date, SHORT_DATE) %></caption>
+  <tr>
+    <th>Core Collection</th>
+    <th>Audit Collection</th>
+    <th>Total Storage</th>
+  </tr>
+  <tr>
+    <td><%= "#{'%.1f' % i}" %> GB</td>
+    <td><%= "#{'%.1f' % p}" %> GB</td>
+    <td><%= "#{'%.1f' % r}" %> GB</td>
+  </tr>
+</table>
+<br><br>
 The chart below reflects the total storage consumed by the various DAS applications, including STRs and DBQs:<br><br>
 
 <div style="width: 97%; height: 350px; background-color:#16365D; color:white; border: 12px solid #16365D;">
