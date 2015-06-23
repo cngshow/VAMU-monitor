@@ -1,0 +1,125 @@
+<html><head>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="https://www.google.com/uds/?file=visualization&amp;v=1.1&amp;packages=bar%2Ccorechart" type="text/javascript"></script><link href="https://www.google.com/uds/api/visualization/1.1/9543863e4f7c29aa0bc62c0051a89a8a/ui+en.css" type="text/css" rel="stylesheet"><script src="https://www.google.com/uds/api/visualization/1.1/9543863e4f7c29aa0bc62c0051a89a8a/dygraph,webfontloader,format+en,default+en,ui+en,bar+en,corechart+en.I.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+		google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+		google.setOnLoadCallback(drawCharts);
+
+		function drawCharts(){
+			drawImmuneColumn();
+		}
+		//[date, daily_count]
+		var immuneData = [<%=get_chart_data%>];
+
+		function drawImmuneColumn() {
+			var data = new google.visualization.DataTable();
+			data.addColumn('date', 'Date');
+			data.addColumn('number', 'Walgreens');
+			data.addRows(immuneData);
+
+			var options = {
+				title: 'DAS: Daily Immunization Submissions',
+				titleTextStyle: {fontSize: 18},
+				legend: {position: 'none'},
+				series: {0: {color: 'blue'}, 1: {color: 'blue'}},
+				hAxis: {
+					title: 'Date Submitted to DAS',
+					titleTextStyle: {bold: true, fontSize: 12},
+					textStyle: {fontSize: 9},
+					gridlines: {color: 'none', count: 10},
+					format: 'M/d/yyyy'
+				},
+				vAxis: {
+					title: 'Number of Immunizations Submitted',
+					titleTextStyle: {bold: true, fontSize: 12},
+					gridlines: {count: 9}
+				}
+			};
+
+			var divEl = document.getElementById('dbq_column_chart_div');
+
+			function placeMarker() {
+				var cli = this.getChartLayoutInterface();
+				var chartArea = cli.getChartAreaBoundingBox();
+				// "Zombies" is element #5.
+				var overlayDiv = document.querySelector('.overlay-marker');
+				overlayDiv.style.top = divEl.offsetTop + (chartArea.height * 1.25) + "px";
+				overlayDiv.style.left = divEl.offsetLeft + (chartArea.width * 1.18) + "px";
+				overlayDiv.innerHTML = immuneData[immuneData.length-1][1] + immuneData[immuneData.length-1][2];
+			};
+
+			var chart = new google.visualization.ColumnChart(divEl);
+			google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
+			chart.draw(data, options);
+		}
+	</script>
+	<style>
+		.DBQ_stubChart {
+			width: 100%; height: 85px; background-color:white; color: black;
+			border: 2px solid #1F497D;
+			adding: 2px;
+		}
+		.DBQ_stubChart2 {
+			width: 45%;
+			padding-top: 10px;
+		}
+		.DBQ_textHeading {
+			background-color:#4F81BD; float: left; width: 100%;
+			padding: 2px;
+		}
+		.dbqBottomLabel {
+			background-color:#4F81BD;  color: white;
+			border: 1px solid #4F81BD;
+			padding: 5px;
+		}
+
+		.dbqTotals {
+			background-color:white;  color: black; font-weight: bold; font-size: larger;
+			width: 225; padding: 5px;
+			text-align: center;
+			vertical-align: bottom;
+			border: 1px solid #4F81BD;
+		}
+
+		.overlay-marker {
+			width: 50px;
+			height: 50px;
+			position: absolute;
+			background-color:white;  color: black; font-size: 16; font-weight: bold;
+		}
+	</style>
+
+<link type="text/css" rel="stylesheet" href="https://ajax.googleapis.com/ajax/static/modules/gviz/1.1/core/tooltip.css"></head>
+
+<body>
+
+<div style="height: 640px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
+  <div style="color:white; float: left; width: 100%;">
+	<div style="float: left; width: 80%;">DAS Disability Benefits Questionnaires (DBQs): Key Statistics</div>
+	<div style="float: right;">Through <%= format_date(@doc[:_id]) %></div>
+  </div>
+  <div style="" class="DBQ_textHeading">DBQ Details by Submitting Entity for: <%= format_date(@doc[:_id]) %></div>
+  <div id="dbq_bar_chart_div" style="float: left;" class="DBQ_stubChart">Stacked Bar Chart, External vs. CAPRI</div>
+  <div style="" class="DBQ_textHeading">Running Totals</div>
+  <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
+	DAS: Daily DBQ Submissions - Column Chart
+  </div>
+  <div class="overlay-marker">
+	0001
+  </div>
+  <% dbq_chart_hash = dbq_chart_points(@doc) %>
+  <div style="width: 100%; float: left;">
+	<div class="DBQ_stubChart2" style="float: left;">
+	  <div style="float: left; " class="dbqBottomLabel">Total Immunization Count:</div>
+	  <div id="total_dbq_submitted_div" style="float: left;" class="dbqTotals"><%= format_number(dbq_chart_hash[:dbqs_submitted]) %></div>
+	</div>
+	<div class="DBQ_stubChart2" style="float: right; ">
+	  <div id="total_size_div" style="float: right; " class="dbqTotals"><%= dbq_chart_hash[:dbq_tot_size] %> GB</div>
+	  <div style="float: right; " class="dbqBottomLabel">Total Size of Immunization Documents:</div>
+	</div>
+  </div>
+</div>
+
+</body>
+</html>
