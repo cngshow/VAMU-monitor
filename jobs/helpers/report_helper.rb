@@ -44,6 +44,7 @@ module ReportHelper
 
   # add comma as a thousandths separator to all numbers in the parameter passed
   def format_number(number)
+    number = 0 if number.nil?
     number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
   end
 

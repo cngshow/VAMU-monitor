@@ -146,7 +146,7 @@
         <td><%= format_number(capri_counts_arr[3])%></td>
       </tr>
       <tr>
-        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line])%>
+        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line], true)%>
         <td>External Vendors</td>
         <td><%= format_number(external_vendor_counts[0])%></td>
         <td><%= format_number(external_vendor_counts[1])%></td>

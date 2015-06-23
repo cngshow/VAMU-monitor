@@ -128,12 +128,13 @@
         <td><%= format_number(capri_counts_arr[3])%></td>
       </tr>
       <tr>
-        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line])%>
+        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line], true)%>
         <td>External Vendors</td>
-        <td><%= format_number(capri_counts_arr[0])%></td>
-        <td><%= format_number(capri_counts_arr[1])%></td>
+        <td><%= format_number(external_vendor_counts[0])%></td>
+        <td><%= format_number(external_vendor_counts[1])%></td>
         <td>N/A</td>
-        <td><%= format_number(capri_counts_arr[2])%></td>
+        <td><%= format_number(external_vendor_counts[2])%></td>
+      </tr>
       </tr>
       <tr class="totals">
         <% total_counts_arr = get_dbq_counts(@doc[:dbq][:das_line])%>
