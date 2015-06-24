@@ -24,16 +24,17 @@ initialize_mongo env
 
 def load_rpt_data
   # match everything up until midnight of the day after the report date
-  match = {"$match" => {"uploadDate" => {"$lte" => (DateTime.parse(@rpt_date) + 1)}}}
-  # project = {"$project" => {"year" => { "$year" => "$uploadDate"}, "month" => { "$month" => "$uploadDate"}, "day" => { "$dayOfMonth" => "$uploadDate"}}}
-
-  group = {"$group" => {"_id" => {"year"=> { "$year" => "uploadDate"}, "month"=> { "$month" => "uploadDate"}, "day"=> { "$dayOfMonth" => "uploadDate"}}, "daily_count" => { "$sum" => 1 }}}
+  match = {"$match" => {:uploadDate => {"$lte" => get_gmt(@rpt_date)}}} # todo add one to rpt date so it is midnight
+  project = {"$project" => {"year" => { "$year" => "$uploadDate"}, "month" => { "$month" => "$uploadDate"}, "day" => { "$dayOfMonth" => "$uploadDate"}}}
+  group = {"$group" => {"_id" => {"year" => "$year", "month" => "$month", "day" => "$day"}, "daily_count" => { "$sum" => 1 }}}
   sort = {"$sort" => {"_id" => 1}}
-  query = @core_db["immunizations"].aggregate([group, sort])
+
+  query = @core_db["immunizations"].aggregate([match, project, group, sort])
+
   last = query.last
   first = query.first
-  last = Date.new(last[:year],last[:month],last[:day])
-  first = Date.new(first[:year],first[:month],first[:day])
+  last = Date.new(last[:_id][:year],last[:_id][:month],last[:_id][:day])
+  first = Date.new(first[:_id][:year],first[:_id][:month],first[:_id][:day])
   days_btw = (last - first).to_i
 
   #fill in all dates between the first date returned and the report date with zeros
@@ -46,7 +47,7 @@ def load_rpt_data
   yearly_totals = {}
   query.each do |doc|
     dt = Date.new(doc[:_id][:year],doc[:_id][:month],doc[:_id][:day])
-    count = doc[daily_count].to_i
+    count = doc[:daily_count].to_i
     ret[dt] = count
     yearly_totals[doc[:_id][:year]] = 0 unless yearly_totals.has_key?(doc[:_id][:year])
     yearly_totals[doc[:_id][:year]] += count
@@ -59,10 +60,9 @@ end
 def get_chart_data(data)
   ret = "[ \n"
   data.each_pair do |k,v|
-    continue if k.eql?(:yearly_summary)
-    count = doc['daily_count']
-    dt = "new Date('#{doc[:_id].strftime('%m/%d/%Y')}')"
-    ret << "[#{dt},#{count}],"
+    break if k.eql?(:yearly_summary)
+    dt = "new Date('#{k.strftime('%m/%d/%Y')}')"
+    ret << "[#{dt},#{v}],"
   end
   ret.chomp!(",\n")
   ret << "]"
@@ -74,7 +74,7 @@ def get_summary_data(data)
 end
 
 begin
-  @rpt_date = "20140916"
+  @rpt_date = "20140917"
   data = load_rpt_data
   chart = get_chart_data(data)
   summary = get_summary_data(data)
