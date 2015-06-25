@@ -1,14 +1,10 @@
 require 'json'
 require './jobs/helpers/mongo_job_connector'
 require './jobs/helpers/report_helper'
-# require './jobs/helpers/job_utility'
-# require './jobs/reports/das/daily_report/daily_report_helper'
 require 'date'
 require 'erb'
 include MongoJobConnector
 include ReportHelper
-# include JobUtility
-# include DailyReportHelper
 
 @rpt_date = ARGV[0]
 @root_url = ARGV[1]
@@ -25,7 +21,7 @@ initialize_mongo env
 def load_rpt_data
   # match everything up until midnight of the day after the report date
   rpt_date_gmt = Date.parse(@rpt_date) + 1
-  match = {"$match" => {:uploadDate => {"$lte" => rpt_date_gmt}}} # todo add one to rpt date so it is midnight
+  match = {"$match" => {:uploadDate => {"$lte" => rpt_date_gmt}}}
   project = {"$project" => {"year" => { "$year" => "$uploadDate"}, "month" => { "$month" => "$uploadDate"}, "day" => { "$dayOfMonth" => "$uploadDate"}}}
   group = {"$group" => {"_id" => {"year" => "$year", "month" => "$month", "day" => "$day"}, "daily_count" => { "$sum" => 1 }}}
   sort = {"$sort" => {"_id" => 1}}
@@ -80,9 +76,8 @@ def calc_total_size
 end
 
 begin
-  @rpt_date = "20150622"
   @walgreens_data = load_rpt_data
-  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true, email_subject: "Walgreens Immunization Report for: #{@rpt_date}"})
+  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true, email_subject: "Walgreens Immunization Report for: #{format_date(@rpt_date)}"})
   @include_chart = true
   render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true})
   puts get_multi_result

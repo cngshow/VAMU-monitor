@@ -34,6 +34,11 @@
         <%= render_erb('jobs/reports/das/walgreens/_walgreens_chart.html.erb') %>
         <br><br>
     <% end %>
+    <% unless @include_chart %>
+        <br><br>
+        <a href="<%= @rpt_link_url %>">Click here to view the chart in the browser</a>
+        <br><br>
+    <% end %>
   </div>
 </div>
 </body>
