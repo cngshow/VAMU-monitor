@@ -75,6 +75,10 @@ def get_summary_data
   @walgreens_data[:summary]
 end
 
+def calc_total_size
+  ((get_summary_data[:total] * 50) / 1024.0).round(2)
+end
+
 begin
   @rpt_date = "20150622"
   @walgreens_data = load_rpt_data
