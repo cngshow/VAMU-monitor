@@ -54,6 +54,17 @@ module ReportHelper
   end
 
   def format_date(rpt_date, mask = NORMAL_DATE)
+    #Date as a string
+    if rpt_date.is_a?(String)
+      begin
+        rpt_date = Date.parse(rpt_date)
+      rescue => ex
+        raise "Invalid date string passed to format date!"
+      end
+    end
+
+    #if the rpt_date is a number then time is in epoch
+    rpt_date = Time.at(rpt_date) if rpt_date.is_a?(Numeric)
     rpt_date.strftime(mask)
   end
 end
