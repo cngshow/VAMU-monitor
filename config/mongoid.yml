@@ -91,6 +91,18 @@ development:
     # use_utc: false
 test:
   sessions:
+
+      das:
+        database: das
+        hosts:
+          - 127.0.0.1:27017
+        replica_set:
+          - 127.0.0.1:27017
+        options:
+          max_retries: 20
+          retry_interval: 0.25
+          pool_size: 50
+
     core:
       uri: mongodb://coreUser:MxldTX5EV2zBr3R0kIrfzKuLLf9Ht6F6@10.224.72.127:27007/core
       options:
