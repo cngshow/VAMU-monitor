@@ -2,6 +2,7 @@ PSTDashboard::Application.routes.draw do
   get 'charting/show_chart'
   get 'charting/show_chart_google'
   get 'job_log_entries/last_job_run'
+  get 'real_time_charting/real_time_chart'
 
   #devise_for :users
   devise_for :users, :controllers => { :registrations => "registrations", :sessions => "sessions" }

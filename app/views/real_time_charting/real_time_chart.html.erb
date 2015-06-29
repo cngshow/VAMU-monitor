@@ -1,0 +1,96 @@
+<%= javascript_include_tag 'jquery.timer.js' %>
+
+
+<script type="text/javascript"
+        src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }">
+</script>
+
+<script type="text/javascript">
+    google.load('visualization', '1', {packages: ['corechart']});
+    google.setOnLoadCallback(drawChart);
+    var chart;
+    var data;
+    var options;
+    var myView;
+    var now = new Date();
+    var midnightEpoch = now.setUTCHours(0, 0, 0, 0);
+    var symbolIdx = {};
+    var originalTitle = '<%=@title%>';
+
+    function drawChart() {
+        data = new google.visualization.DataTable();
+        data.addColumn('datetime', 'Time');
+
+        <%@element_description.each do |description|  %>
+        <%= raw "data.addColumn('number', '#{description}');"%>
+        <%end%>
+
+        data.addRows([<%= add_rows %>]);
+
+        options = {
+            title: <%=raw("'#{@title}\\n#{@time_span}'")%>,
+            hAxis: {
+                title: <%=raw("'#{@x_title}'")%>
+            },
+            vAxis: {
+                title:<%=raw("'#{@y_title}'")%>
+            },
+
+            explorer: {
+                actions: ['dragToZoom', 'rightClickToReset'],
+                maxZoomIn: .01,
+                keepInBounds: true,
+                axis: 'horizontal'
+            }
+
+        };
+        myView = new google.visualization.DataView(data);
+        chart = new google.visualization.LineChart(
+                document.getElementById('chartContainer'));
+        chart.draw(myView, options);
+
+    }
+
+        function updateChart() {
+                $.ajax({url: "<%=real_time_charting_real_time_chart_path%>?format=json", success: function(result){
+                    //$("#div1").html(result);
+                    chart.clearChart();
+                    data = new google.visualization.DataTable();
+                    data.addColumn('datetime', 'Time');
+                    <%@element_description.each do |description|  %>
+                    <%= raw "data.addColumn('number', '#{description}');"%>
+                    <%end%>
+                   // alert(JSON.stringify(result));
+                    //A doc looks like:
+                    //{"_id":1435260587515.0,"Total_Count":10.0,"start_time_epoch":1435260577506.0,"end_time_epoch":1435260587515.0}
+                    var rows = [];
+                    for (var index in result) {
+                        var tc = result[index].Total_Count;
+                        var et = result[index].end_time_epoch;
+                        rows.push([new Date(et), tc]);
+                    }
+                    data.addRows(rows);
+                    myView = new google.visualization.DataView(data);
+                    chart.draw(myView, options);
+                   // alert(JSON.stringify(result));
+                }});
+            //   alert("chart updated! <%=@update_interval%>")
+
+        }
+    var timer = $.timer(function(){updateChart()});
+    timer.set({ time : <%=@update_interval%>, autostart : true });
+    timer.play(true);
+
+</script>
+
+
+<h1>DAS Real Time Charting</h1>
+
+
+<div id="chartContainer" style="height: 480px; width: 95%;margin: 5px; padding: 5px; border-bottom: solid; border-top: solid; border-color: navy"/>
