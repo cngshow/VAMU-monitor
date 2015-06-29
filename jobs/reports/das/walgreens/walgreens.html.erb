@@ -1,0 +1,45 @@
+<html>
+<head>
+  <%= render_erb('jobs/reports/das/daily_report/str_dbq_daily.css.html.erb') %>
+</head>
+<body>
+<div id="main_result">
+  <div id="rpt_result" style="margin: 15px;">
+    <h2>Immunizations (Walgreens) Activity Report</h2>
+
+    <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %></h3>
+
+    <table class="strDbqTable" style="width:750px">
+      <caption>Immunization Results: Updated Totals</caption>
+      <tr>
+        <th>Received on <%= format_date(@rpt_date, SHORT_DATE) %></th>
+        <%
+           summary = get_summary_data
+           summary.keys.each do |k|
+        %>
+            <%= "<th>Received in #{k}</th>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
+        <% end %>
+        <th>Total to Date</th>
+      </tr>
+      <tr>
+        <td><%= format_number(summary[:rpt_date_count]) %></td>
+        <% summary.each_pair do |k, v| %>
+            <%= "<td>#{format_number(v)}</td>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
+        <% end %>
+        <td><%= format_number(summary[:total]) %></td>
+      </tr>
+    </table>
+    <% if @include_chart %>
+        <br><br>
+        <%= render_erb('jobs/reports/das/walgreens/_walgreens_chart.html.erb') %>
+        <br><br>
+    <% end %>
+    <% unless @include_chart %>
+        <br><br>
+        <a href="<%= @rpt_link_url %>">Click here to view the chart in the browser</a>
+        <br><br>
+    <% end %>
+  </div>
+</div>
+</body>
+</html>

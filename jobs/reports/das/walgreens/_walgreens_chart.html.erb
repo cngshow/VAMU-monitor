@@ -1,0 +1,124 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+    google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+    google.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        drawImmuneColumn();
+    }
+    //[date, daily_count]
+    var immuneData = <%= get_chart_data %>;
+
+    function drawImmuneColumn() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Walgreens');
+        data.addRows(immuneData);
+
+        var options = {
+            title: 'DAS: Daily Immunization Submissions',
+            titleTextStyle: {fontSize: 18},
+            legend: {position: 'none'},
+            series: {0: {color: 'blue'}, 1: {color: 'blue'}},
+            hAxis: {
+                title: 'Date Submitted to DAS',
+                titleTextStyle: {bold: true, fontSize: 12},
+                textStyle: {fontSize: 9},
+                gridlines: {color: 'none', count: 10},
+                format: 'M/d/yyyy'
+            },
+            vAxis: {
+                title: 'Number of Immunizations Submitted',
+                titleTextStyle: {bold: true, fontSize: 12},
+                gridlines: {count: 9}
+            }
+        };
+
+        var divEl = document.getElementById('dbq_column_chart_div');
+
+        function placeMarker() {
+            var cli = this.getChartLayoutInterface();
+            var chartArea = cli.getChartAreaBoundingBox();
+            var overlayDiv = document.querySelector('.overlay-marker');
+            overlayDiv.style.top = divEl.offsetTop + (chartArea.height * 1.25) + "px";
+            overlayDiv.style.left = divEl.offsetLeft + (chartArea.width * 1.18) + "px";
+            overlayDiv.innerHTML = immuneData[immuneData.length - 1][1];
+        };
+
+        var chart = new google.visualization.ColumnChart(divEl);
+        google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
+        chart.draw(data, options);
+    }
+</script>
+<style>
+    .DBQ_stubChart2 {
+        width: 45%;
+        padding-top: 10px;
+    }
+
+    .DBQ_textHeading {
+        background-color: #4F81BD;
+        float: left;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .dbqBottomLabel {
+        background-color: #4F81BD;
+        color: white;
+        border: 1px solid #4F81BD;
+        padding: 5px;
+        font-weight: bold;
+        font-size: larger;
+    }
+
+    .dbqTotals {
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        font-size: larger;
+        width: 200px;
+        padding: 5px;
+        text-align: center;
+        vertical-align: bottom;
+        border: 1px solid #4F81BD;
+    }
+
+    .overlay-marker {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        background-color: white;
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
+<div style="height: 540px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
+  <div style="color:white; float: left; width: 100%; margin-bottom: 5px">
+    <div style="float: left; width: 80%; font-weight: bold;">DAS Immunizations (Walgreens): Key Statistics</div>
+    <div style="float: right;font-weight: bold;">Through <%= format_date(@rpt_date) %></div>
+  </div>
+  <div class="DBQ_textHeading">&nbsp;&nbsp;Running Totals</div>
+  <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
+    DAS: Daily DBQ Submissions - Column Chart
+  </div>
+  <div class="overlay-marker">
+    0001
+  </div>
+  <% summary = get_summary_data %>
+  <div style="width: 100%; float: left;">
+    <div class="DBQ_stubChart2" style="float: left;">
+      <div style="float: left; " class="dbqBottomLabel">Total Immunizations:</div>
+      <div id="total_dbq_submitted_div" style="float: left;" class="dbqTotals"><%= format_number(summary[:total]) %></div>
+    </div>
+    <div class="DBQ_stubChart2" style="float: right; ">
+      <div id="total_size_div" style="float: right; " class="dbqTotals"><%= calc_total_size.to_s %> MB</div>
+      <div style="float: right; " class="dbqBottomLabel">Total Size of Immunization Documents:</div>
+    </div>
+  </div>
+</div>

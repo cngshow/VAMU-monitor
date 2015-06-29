@@ -1,10 +1,11 @@
 module DailyReportHelper
-  def get_str_audit_hash(rpt_date)
+  def get_str_audit_hash(rpt_date, str_count)
     #this takes around 4 minutes to complete
     dt = get_gmt(rpt_date)
     end_dt = format_date(dt + (60*60*24),'%Y-%m-%d')
     putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && ./ecrudstraudit.sh '#{rpt_date}' '#{end_dt}'\"}
-    data = backtick(putty).split("\n")
+    data = []
+    data = backtick(putty).split("\n") unless str_count == 0
 
     # read the data calculating the first and second pass counts and response times
     hours_hash = {'23' => '19','00' => '20','01' => '21','02' => '22','03' => '23','04' => '00','05' => '01','06' => '02','07' => '03','08' => '04','09' => '05','10' => '06','11' => '07','12' => '08','13' => '09','14' => '10','15' => '11','16' => '12','17' => '13','18' => '14','19' => '15','20' => '16','21' => '17','22' => '18'}

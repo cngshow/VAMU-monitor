@@ -12,14 +12,12 @@
           height: 95%;
           color: #000077;
       }
-  </style>
-  <style>
-      .strDbqTable {
+     .strDbqTable {
           font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
           border: 1px solid #A9A9A9;
           border-collapse: collapse;
       }
-      .strDbqTable th, td {
+      .strDbqTable th, .strDbqTable td {
           padding: 10px;
           text-align: center;
           border: 1px solid #A9A9A9;
@@ -30,6 +28,7 @@
           color: white;
           height: 40px;
           text-align: center;
+          font-weight: bold;
       }
 
       .strDbqTable td {
@@ -146,12 +145,12 @@
         <td><%= format_number(capri_counts_arr[3])%></td>
       </tr>
       <tr>
-        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line])%>
+        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line], true)%>
         <td>External Vendors</td>
-        <td><%= format_number(capri_counts_arr[0])%></td>
-        <td><%= format_number(capri_counts_arr[1])%></td>
+        <td><%= format_number(external_vendor_counts[0])%></td>
+        <td><%= format_number(external_vendor_counts[1])%></td>
         <td>N/A</td>
-        <td><%= format_number(capri_counts_arr[2])%></td>
+        <td><%= format_number(external_vendor_counts[2])%></td>
       </tr>
       <tr class="totals">
         <% total_counts_arr = get_dbq_counts(@doc[:dbq][:das_line])%>

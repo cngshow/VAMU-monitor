@@ -144,7 +144,7 @@ def write_rpt_data(rpt_date)
   data_hash[:storage][:audit_used] = storage_data[2]
 
   # get the audit data hourly breakdown for first and second passes
-  audit_hash = get_str_audit_hash(rpt_date)
+  audit_hash = get_str_audit_hash(rpt_date, data_hash[:str][:yesterday_count])
   audit_hash[:str_docs_saved_hourly] = str_hourly_hash
   data_hash[:audit] = {}
   data_hash[:audit][:breakdown] = audit_hash
