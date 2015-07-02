@@ -80,6 +80,8 @@ begin
   render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true, email_subject: "Walgreens Immunization Report for: #{format_date(@rpt_date)}"})
   @include_chart = true
   render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true})
+  @moroni =  true
+  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true})
   puts get_multi_result
 ensure
   disconnect_all

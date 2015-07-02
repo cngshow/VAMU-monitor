@@ -3,7 +3,7 @@
 
 
 
-load("./jobs/mongo_samples/capped_collection.js")
+load("./capped_collection.js");
 
 var db = fetchDatabase(host, port, database);
 
