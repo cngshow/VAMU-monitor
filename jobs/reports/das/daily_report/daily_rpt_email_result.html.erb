@@ -51,7 +51,11 @@
   <div id="rpt" style="margin: 15px;">
     <h2>Team - a quick status on DAS STR & DBQ activity since the last report:</h2>
     <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %>:</h3>
-    <a href="<%=@rpt_link_url%>">Click here to view the charts in the browser</a>
+    <a href="<%=@rpt_link_url%>1">Click here to view the charts in the browser (current format)</a>
+    <br>
+    <a href="<%=@rpt_link_url%>2">Click here to view the charts in the browser (table format)</a>
+    <br>
+    <a href="<%=@rpt_link_url%>3">Click here to view the charts in the browser (narrative format)</a>
     <br>
     <br>
     <table class="strDbqTable" style="width:750px">
@@ -67,7 +71,7 @@
       <tr>
         <td><%= format_number(@doc[:str][:yesterday_count]) %></td>
         <td><%= format_number(@doc[:str][:yesterday_vet_count]) %></td>
-        <td><%= @doc[:audit][:breakdown][:tot_trans_time] %></td><!--11h 58m 22s-->
+        <td><%= format_time_h_m_s(@doc[:audit][:breakdown][:tot_trans_time]) %></td><!--11h 58m 22s-->
         <td><%= format_number(@doc[:audit][:breakdown][:pass1_count]) %></td>
         <td><%= format_number(@doc[:audit][:breakdown][:pass2_count]) %></td>
         <td><%= format_number(@doc[:audit][:breakdown][:pass1_count] + @doc[:audit][:breakdown][:pass2_count]) %></td>

@@ -60,11 +60,36 @@
    p = (c - p) * 1024.0
    r = (i + p)
 %>
+<div style="border: 1px solid #4F81BD; width: 490px; height: 105px; padding: 12px;" >
+  <div style="border: 3px solid #4F81BD; width: 100%; height: 98%;" >
+    <div style="width: 99%; float: left; padding: 2px;" class="lightColors">
+            <span style="font-weight: bold; float: left; text-decoration: underline; ">
+                Overall Capacity utilization of DAS Data Store
+            </span>
+            <span style="float: left; margin-left: 15px;">
+                <%= format_date(@rpt_date, SHORT_DATE) %>
+            </span>
+    </div>
+    <div class="row darkColors">
+            <span style="float: left; margin-left: 45px;">
+                <%= "#{'%.1f' % r}" %> GB&nbsp;&nbsp;Additional storage consumed
+            </span>
+    </div>
+    <div style="width: 100%; float: left; padding-bottom: 2px;">
+            <span class="subRow">
+                <%= "#{'%.1f' % i}" %> GB&nbsp;&nbsp;Core
+            </span>
+            <span class="subRow">
+                <%= "#{'%.1f' % p}" %> GB&nbsp;&nbsp;Audit
+            </span>
+    </div>
+  </div>
+</div>
+<div class="divSpacer"></div>
 
-<span class="subsection_hdr">Overall Capacity utilization of DAS Data Store:</span><br>
-<%= format_date(@rpt_date, SHORT_DATE) %>: Additional storage consumed:&nbsp;&nbsp;&nbsp;&nbsp;<%= "#{'%.1f' % r}" %> GB total&nbsp;&nbsp;(Core:&nbsp;<%= "#{'%.1f' % i}" %>
-GB;&nbsp;&nbsp;Audit:&nbsp;<%= "#{'%.1f' % p}" %> GB)<br><br>
 The chart below reflects the total storage consumed by the various DAS applications, including STRs and DBQs:<br><br>
+
+<div class="divSpacer"></div>
 
 <div style="width: 97%; height: 350px; background-color:#16365D; color:white; border: 12px solid #16365D;">
   <div style="color:white; float: left; width: 100%; padding-bottom: 4">

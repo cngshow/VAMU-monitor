@@ -32,7 +32,7 @@ class RealTimeChartingController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render :json => @json_data_hash[:real_time_data].to_json }
+      format.json { render :json => @json_data_hash.to_json }
     end
   end
 end

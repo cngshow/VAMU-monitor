@@ -1,0 +1,116 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+      google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+      google.setOnLoadCallback(drawAcaDailyCharts);
+      var dailyData = <%= get_chart_data %>;
+
+      function drawAcaDailyCharts() {
+          var data = new google.visualization.DataTable();
+          data.addColumn('date', 'Date');
+          data.addColumn('number', 'Requests');
+          data.addColumn('number', 'Responses');
+
+          for (var i = 0; i < dailyData.length; i++) {
+              var row = dailyData[i];
+              data.addRow([row[0], row[1], row[2]]);
+          }
+
+          var options = {
+              title: 'DAS/ACA Transactions',
+              titleTextStyle: {fontSize: 18},
+              legend: {position: 'top', alignment: 'center'},
+
+              hAxis: {
+                  title: 'Date',
+                  titleTextStyle: {bold: true, fontSize: 12},
+                  textStyle: {fontSize: 9},
+                  gridlines: {color: 'none', count: 15},
+                  format: 'M/d/yyyy'
+              },
+              vAxis: {
+                  title: 'Transactions'
+              }
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('ACA_daily_columnChart_div'));
+          chart.draw(data, options);
+      }
+  </script>
+  <style>
+      .STR_stubChart {
+          width: 99.5%;
+          height: 280px;
+          background-color: white;
+          color: black;
+          border: 2px solid #1F497D;
+      }
+
+      .STR_stubChart2 {
+          width: 49.7%;
+          background-color: white;
+          color: black;
+          border: 2px solid #1F497D;
+      }
+
+      .STR_textHeading {
+          background-color: #4F81BD;
+          float: left;
+          width: 100%;
+      }
+  </style>
+</head>
+
+<body style="height: 1000">
+
+<h2>ACA/DAS Activity Report</h2>
+
+<!-- BEGIN Table HTML & CSS -->
+<style>
+    .row {
+        width: 100%;
+        float: left;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    .subRow {
+        float: left;
+        margin-left: 85px;
+        width: 100%;
+        padding-top: 6px;
+    }
+
+    .lightColors {
+        background-color: #4F81BD;
+        color: white;
+    }
+
+    .darkColors {
+        background-color: #1F497D;
+        color: white;
+    }
+</style>
+
+<div style="height: 10px"></div>
+<div style="height: 590px; width: 97%; background-color:#1F497D; color:white; border: 12px solid #1F497D;">
+  <div style="color:white; float: left; width: 100%;">
+    <div style="float: left; width: 80%;">DAS Affordable Care Act (ACA): Key Statistics</div>
+    <!--<div style="float: right;">Through 5/25/2015</div>-->
+  </div>
+  <!--<div style="" class="STR_textHeading">Details for 5/25/2015</div>-->
+  <!--<div id="STR_first_pass_combo_div" style="float: left;" class="STR_stubChart">Picture 7 - Stack Chart, dual vAxis</div>-->
+  <!--<div style="" class="STR_textHeading">Running Totals</div>-->
+  <div style="width: 100%; float: left;">
+    <div style="float: left; width: 99.5%;">
+      <div style="width: 100%;" class="STR_stubChart2">
+        <div id="ACA_daily_columnChart_div" style="height: 240px;">Column Chart</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>

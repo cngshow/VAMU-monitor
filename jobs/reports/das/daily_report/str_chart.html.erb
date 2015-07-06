@@ -1,3 +1,18 @@
+<style>
+    .STR_stubChart {
+        width: 49.7%; height: 175px; background-color:white; color: black;
+        border: 2px solid #16365D;
+    }
+
+    .STR_stubChart2 {
+        width: 49.7%; background-color:white; color: black;
+        border: 2px solid #16365D;
+    }
+
+    .STR_textHeading {
+        background-color:#1B49A0; float: left; width: 100%;
+    }
+</style>
 <script>
     function drawSTRComboChart(config){
         var data = new google.visualization.DataTable();
@@ -61,23 +76,16 @@
         };
         drawSTRComboChart(secondPassConfig);
     }
-</script>
-<style>
-    .STR_stubChart {
-        width: 49.7%; height: 175; background-color:white; color: black;
-        border: 2px solid #16365D;
+
+    google.setOnLoadCallback(drawSTRCharts);
+
+    function drawSTRCharts() {
+        drawSTRAuditCharts();
+        drawSTRDownloadsBarChart();
+        drawSTRDownloadsColumnChart();
+        drawSTRDownloadSizeScatter();
     }
 
-    .STR_stubChart2 {
-        width: 49.7%; background-color:white; color: black;
-        border: 2px solid #16365D;
-    }
-
-    .STR_textHeading {
-        background-color:#1B49A0; float: left; width: 100%;
-    }
-</style>
-<script>
     function drawSTRDownloadsBarChart() {
         var dataArr = <%= get_str_download_total_data(@doc) %>; //['Type', 'Unique Documents', 'Total Documents']
         var data = new google.visualization.DataTable();
@@ -111,9 +119,8 @@
         var chart = new google.visualization.BarChart(document.getElementById('STR_bar_chart_div'));
         chart.draw(data, options);
     }
-</script>
-<script>
-    function drawSTRDownloadsColumnChart() {
+
+   function drawSTRDownloadsColumnChart() {
         var data = new google.visualization.DataTable();        data.addColumn('date', 'Date');
         data.addColumn('number', 'STR Documents');
 
@@ -142,9 +149,8 @@
         var chart = new google.visualization.ColumnChart(document.getElementById('STR_download__columnChart_div'));
         chart.draw(data, options);
     }
-</script>
-<script>
-    function drawSTRDownloadSizeScatter(){
+
+   function drawSTRDownloadSizeScatter(){
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'Document #');
         data.addColumn('number', 'Document less than 100 MB');
@@ -165,7 +171,7 @@
         chart.draw(data, options);
     }
 </script>
-<div style="height: 664; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
+<div style="height: 664px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
   <div style="color:white; float: left; width: 100%;">
     <div style="float: left; width: 80%;">DAS Service Treatment Records (STRs): Key Statistics</div>
     <div style="float: right;">Through <%=format_date(@rpt_date, NORMAL_DATE)%></div>
@@ -177,10 +183,10 @@
   <div sytle="width: 100%; float: left;">
     <div style="float: left; width: 49.7%;">
       <div style="width: 100%;" class="STR_stubChart2">
-        <div id="STR_download__columnChart_div" style="height: 220;">Column Chart</div>
+        <div id="STR_download__columnChart_div" style="height: 220px;">Column Chart</div>
       </div>
-      <div id="STR_size_scatter" style="width: 100%; height: 200;" class="STR_stubChart2">Scatter Chart</div>
+      <div id="STR_size_scatter" style="width: 100%; height: 200px;" class="STR_stubChart2">Scatter Chart</div>
     </div>
-    <div id="STR_bar_chart_div" class="STR_stubChart2" style="float: right; height: 424; ">Bar Chart</div>
+    <div id="STR_bar_chart_div" class="STR_stubChart2" style="float: right; height: 424px; ">Bar Chart</div>
   </div>
 </div>

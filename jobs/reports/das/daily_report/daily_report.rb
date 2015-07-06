@@ -23,7 +23,7 @@ end
 env = ARGV[4].to_sym
 @plink = ARGV[5]
 
-@rpt_link_url = "#{@root_url}/view_multiple/#{@jle_id}/1"
+@rpt_link_url = "#{@root_url}/view_multiple/#{@jle_id}/"
 
 # establish mongo connections to vamu and core
 initialize_mongo env
@@ -159,6 +159,7 @@ def write_report(doc)
   rpt_result = render_erb('./jobs/reports/das/daily_report/daily_report.html.erb', {multi_result: true})
   File.open(@rpt_output_html, 'w') { |file| file.write(rpt_result) }
   render_erb('./jobs/reports/das/daily_report/daily_report2.html.erb', {multi_result: true})
+  render_erb('./jobs/reports/das/daily_report/daily_report3.html.erb', {multi_result: true})
 end
 
 def get_rpt_data(rpt_date)

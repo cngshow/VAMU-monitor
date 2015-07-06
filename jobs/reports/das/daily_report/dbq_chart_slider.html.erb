@@ -1,30 +1,29 @@
 <style>
     .DBQ_stubChart {
         width: 100%;
-        height: 85;
+        height: 85px;
         background-color: white;
         color: black;
         border: 2px solid #16365D;
-        adding: 2;
     }
 
     .DBQ_stubChart2 {
         width: 45%;
-        padding-top: 10;
+        padding-top: 10px;
     }
 
     .DBQ_textHeading {
         background-color: #1B49A0;
         float: left;
         width: 100%;
-        padding: 2;
+        padding: 2px;
     }
 
     .dbqBottomLabel {
         background-color: #1B49A0;
         color: white;
-        border: 1 solid #1B49A0;
-        padding: 5;
+        border: 1px solid #1B49A0;
+        padding: 5px;
     }
 
     .dbqTotals {
@@ -32,24 +31,14 @@
         color: black;
         font-weight: bold;
         font-size: larger;
-        width: 225;
-        padding: 5;
+        width: 225px;
+        padding: 5px;
         text-align: center;
         vertical-align: bottom;
-        border: 1 solid #1B49A0;
-    }
-
-    .overlay-marker {
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        background-color: white;
-        color: black;
-        font-size: 16;
-        font-weight: bold;
+        border: 1px solid #1B49A0;
     }
 </style>
-<script>
+<script type='text/javascript'>
     //[date, CAPRI_count, external_vendor_count]
     var dbqData = [
         <% data = dbq_data
@@ -58,6 +47,13 @@
         [new Date('<%= format_date(d[:_id])%>'), <%=d[:dbq][:capri_count]%>, <%=d[:dbq][:external_count]%>]<%= data.last.eql?(d) ? '' : ',' %>
         <% end %>
     ];
+
+    google.setOnLoadCallback(drawDBQCharts);
+
+    function drawDBQCharts() {
+        drawDBQStacked();
+        drawDBQBarChart();
+    }
 
     function drawDBQBarChart() {
         var data = new google.visualization.DataTable();
@@ -107,6 +103,7 @@
                 gridlines: {color: 'none', count: 15},
                 format: 'M/d/yyyy',
                 viewWindow: {
+                    //min: new Date(2014, 11, 31, 18),
                     max: new Date('<%=format_date(@doc[:_id])%>')
                 }
             },
@@ -116,34 +113,37 @@
                 gridlines: {count: 9}
             }
         };
+        // Create a dashboard.
+        var dashboard = new google.visualization.Dashboard(document.getElementById('dbq_column_chart_div'));
 
-        var divEl = document.getElementById('dbq_column_chart_div');
+        // Create a range slider, passing some options
+        var donutRangeSlider = new google.visualization.ControlWrapper({
+            'controlType': 'DateRangeFilter',
+            'containerId': 'filter_div',
+            'options': {
+                'filterColumnLabel': 'Date'
+            }
+        });
 
-        function placeMarker(dataTable) {
-            var cli = this.getChartLayoutInterface();
-            var chartArea = cli.getChartAreaBoundingBox();
-            // "Zombies" is element #5.
-            var overlayDiv = document.querySelector('.overlay-marker');
-            overlayDiv.style.top = divEl.offsetTop + (chartArea.height * 0.69) + "px";
-            overlayDiv.style.left = divEl.offsetLeft + (chartArea.width * 1.18) + "px";
-            overlayDiv.innerHTML = dbqData[dbqData.length - 1][1] + dbqData[dbqData.length - 1][2];
-        };
+        // Create a pie chart, passing some options
+        var colChart = new google.visualization.ChartWrapper({
+            'chartType': 'ColumnChart',
+            'containerId': 'chart_div',
+            'options': options
+        });
+        //var chart = new google.visualization.ColumnChart(document.getElementById('dbq_column_chart_div'));
+        //chart.draw(data, options);
+        // Establish dependencies, declaring that 'filter' drives 'pieChart',
+        // so that the pie chart will only display entries that are let through
+        // given the chosen slider range.
+        dashboard.bind(donutRangeSlider, colChart);
 
-        var chart = new google.visualization.ColumnChart(divEl);
-        google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
-        chart.draw(data, options);
+        // Draw the dashboard.
+        dashboard.draw(data);
     }
-
-    google.setOnLoadCallback(drawDBQCharts);
-
-    function drawDBQCharts() {
-        drawDBQStacked();
-        drawDBQBarChart();
-    }
-
 </script>
 
-<div style="height: 640; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
+<div style="height: 640px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
   <div style="color:white; float: left; width: 100%;">
     <div style="float: left; width: 80%;">DAS Disability Benefits Questionnaires (DBQs): Key Statistics</div>
     <div style="float: right;">Through <%= format_date(@doc[:_id]) %></div>
@@ -152,16 +152,14 @@
   <div id="dbq_bar_chart_div" style="float: left;" class="DBQ_stubChart">Stacked Bar Chart, External vs. CAPRI</div>
   <div style="" class="DBQ_textHeading">Running Totals</div>
   <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
-    DAS: Daily DBQ Submissions - Column Chart
-  </div>
-  <div class="overlay-marker">
-    0001
+    <div id="filter_div" style="width: 98.7%; float: left; background-color: white; color: black; padding: 10px;"></div>
+    <div id="chart_div" style="width: 100%; float: left; height: 410px; ">DAS: Daily DBQ Submissions - Column Chart</div>
   </div>
   <% dbq_chart_hash = dbq_chart_points(@doc) %>
   <div style="width: 100%; float: left;">
     <div class="DBQ_stubChart2" style="float: left;">
       <div style="float: left; " class="dbqBottomLabel">Total DBQs Submitted:</div>
-      <div id="total_dbq_submitted_div" style="float: left;" class="dbqTotals"><%= format_number(dbq_chart_hash[:dbqs_submitted]) %></div>
+      <div id="total_dbq_submitted_div" style="float: left; " class="dbqTotals"><%= format_number(dbq_chart_hash[:dbqs_submitted]) %></div>
     </div>
     <div class="DBQ_stubChart2" style="float: right; ">
       <div id="total_size_div" style="float: right; " class="dbqTotals"><%= dbq_chart_hash[:dbq_tot_size] %> GB</div>

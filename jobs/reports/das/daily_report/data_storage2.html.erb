@@ -1,3 +1,9 @@
+<style>
+    .pieCart {
+        width: 49.5%; height: 95%; float: left;
+        border: 1px solid #16365D;
+    }
+</style>
 <script>
     function drawPieCharts() {
         <% pts = disk_space_points(@doc) %>
@@ -40,14 +46,10 @@
         var chart = new google.visualization.PieChart(document.getElementById(config.div));
         chart.draw(data, options);
     }
+
+    google.setOnLoadCallback(drawPieCharts);
 </script>
 
-<style>
-    .pieCart {
-        width: 49.5%; height: 95%; float: left;
-        border: 1px solid #16365D;
-    }
-</style>
 <%
    # get the storage usage points in order to build the reporting verbiage
    pts_array = charting_data_points(:storage_chart, @doc)
@@ -77,7 +79,7 @@
 The chart below reflects the total storage consumed by the various DAS applications, including STRs and DBQs:<br><br>
 
 <div style="width: 97%; height: 350px; background-color:#16365D; color:white; border: 12px solid #16365D;">
-  <div style="color:white; float: left; width: 100%; padding-bottom: 4">
+  <div style="color:white; float: left; width: 100%; padding-bottom: 4px">
     <div style="float: left; width: 80%;">DAS Data Store: Phase II - Capacity & Usage Statistics</div>
     <div style="float: right;">Through <%= format_date(@doc[:_id]) %></div>
   </div>
