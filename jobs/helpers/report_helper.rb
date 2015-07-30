@@ -67,4 +67,13 @@ module ReportHelper
     rpt_date = Time.at(rpt_date) if rpt_date.is_a?(Numeric)
     rpt_date.strftime(mask)
   end
+
+  def format_time_h_m_s(time_string)
+    ret = time_string
+    if time_string =~ /\d{2}:\d{2}:\d{2}/
+      ret = time_string.sub(':', 'h ').sub(':', 'm ')
+      ret << 's'
+    end
+    ret
+  end
 end

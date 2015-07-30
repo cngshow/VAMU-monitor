@@ -1,7 +1,7 @@
 module RealTimeChartingHelper
   def add_rows
     ret = ""
-    @docs.each do |doc|
+    @json_data_hash[:real_time_data].each do |doc|
       ret << "[new Date(#{doc['end_time_epoch']}),#{doc['Total_Count']}],\n"
     end
     ret.chomp!.chop!

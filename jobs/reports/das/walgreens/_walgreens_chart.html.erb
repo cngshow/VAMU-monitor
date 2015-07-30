@@ -47,7 +47,7 @@
         };
 
         var chart = new google.visualization.ColumnChart(divEl);
-        google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
+        //google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
         chart.draw(data, options);
     }
 </script>
@@ -107,9 +107,9 @@
   <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
     DAS: Daily DBQ Submissions - Column Chart
   </div>
-  <div class="overlay-marker">
+<!--  <div class="overlay-marker">
     0001
-  </div>
+  </div>-->
   <% summary = get_summary_data %>
   <div style="width: 100%; float: left;">
     <div class="DBQ_stubChart2" style="float: left;">

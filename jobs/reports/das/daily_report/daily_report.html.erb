@@ -40,20 +40,7 @@
       }
   </style>
   <script>
-      google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
-      google.setOnLoadCallback(drawCharts);
-
-      function drawCharts() {
-          drawPieCharts();
-
-//          these are in the dbq chart - see if you can move these calls there!
-          drawDBQStacked();
-          drawDBQBarChart();
-          drawSTRAuditCharts();
-          drawSTRDownloadsBarChart();
-          drawSTRDownloadsColumnChart();
-          drawSTRDownloadSizeScatter();
-      }
+      google.load('visualization', '1', {packages: ['corechart', 'bar', 'controls']});
   </script>
 </head>
 <body>
@@ -71,7 +58,7 @@
       <%= format_date(@rpt_date, SHORT_DATE) %>: DAS received
       <span class="subsection_hdr"><%= format_number(@doc[:str][:yesterday_count]) %></span> STR documents
       (for <%= format_number(@doc[:str][:yesterday_vet_count]) %> Veterans) from HAIMS. The total processing time
-      (hh:mm:ss) was <%= @doc[:audit][:breakdown][:tot_trans_time] %>
+      (hh:mm:ss) was <%= format_time_h_m_s(@doc[:audit][:breakdown][:tot_trans_time]) %>
       (for <%= format_number(@doc[:audit][:breakdown][:pass1_count] + @doc[:audit][:breakdown][:pass2_count]) %>
       transactions with HAIMS
       [first-pass: <%= format_number(@doc[:audit][:breakdown][:pass1_count]) %>;
@@ -122,7 +109,7 @@
     </table>
     <br style="clear: left;"/>
     </p>
-    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb')%>
+    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb') %>
     <p>
       <span class="subsection_hdr">DBQs:</span><br>
       <%= format_date(@rpt_date, SHORT_DATE) %>: DAS received a total of <%= format_number(@doc[:dbq][:das_count]) %>
@@ -153,7 +140,6 @@
         <td width="10%">&nbsp;</td>
       </tr>
     </table>
-
     </p>
     <%= render_erb('./jobs/reports/das/daily_report/dbq_chart.html.erb') %>
     <br>

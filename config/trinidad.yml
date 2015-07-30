@@ -1,8 +1,8 @@
   address: 0.0.0.0 # set to '*' to bind to all interfaces (0.0.0.0 ALLOWS the outside world to hit it. localhost only allows access from that box)
-  port: 3000 # port where Trinidad is running
-  environment: development # specify with `trinidad -e production`
-  #environment: test # specify with `trinidad -e production`
-  #environment: production # specify with `trinidad -e production`
+  # port where Trinidad is running
+  port: <%= "#{ENV['VAMU_PORT'].nil? ? 3000 : ENV['VAMU_PORT']}"%>
+  # specify with `trinidad -e production`
+  environment: <%= "#{ENV['VAMU_ENV'].nil? ? 'development' : ENV['VAMU_ENV']}"%>
   http: # HTTP connector setup
     acceptCount: 100
     maxThreads: 200

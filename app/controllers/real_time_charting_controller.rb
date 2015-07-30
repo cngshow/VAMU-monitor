@@ -11,26 +11,28 @@ class RealTimeChartingController < ApplicationController
   end
 
   def real_time_chart
+    @json_data_hash = {}
     RealTimeChartingController.initialize_collection
-    @title = 'DAS Documents - Mocked Real Time Transactions.'
-    @x_title = 'Time'
-    @y_title = 'Transaction Count'
-    @time_span= ''
-    @update_interval = 10*1000
-    @element_description = ["DAS Documents"]
-      begin
-        @docs = @@collection.find({}).entries
-      rescue => ex
-        $logger.error("Something went wrong in the real time charting controller the exception trace is:")
-        $logger.error ex.backtrace.join("\n")
-        $logger.error("Resetting the mongo data connection")
-        @@db = nil
-      end
+    @json_data_hash[:chart_title] = $application_properties['chart_title']
+    @json_data_hash[:x_title] = $application_properties['x_title']
+    @json_data_hash[:y_title] = $application_properties['y_title']
+    @json_data_hash[:time_span] = $application_properties['time_span']
+    @json_data_hash[:refresh_interval] = $application_properties['real_time_refresh_interval_secs'].to_i
+    @json_data_hash[:element_description] = $application_properties['element_description'].split(',')
+
+    begin
+      docs = @@collection.find({}).entries
+      @json_data_hash[:real_time_data] = docs
+    rescue => ex
+      $logger.error("Something went wrong in the real time charting controller the exception trace is:")
+      $logger.error ex.backtrace.join("\n")
+      $logger.error("Resetting the mongo data connection")
+      @@db = nil
+    end
 
     respond_to do |format|
       format.html
-      format.json { render :json => @docs.to_json }
+      format.json { render :json => @json_data_hash.to_json }
     end
   end
-
 end
