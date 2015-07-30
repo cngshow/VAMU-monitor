@@ -1,0 +1,27 @@
+<table class="hovertable">
+  <tr>
+    <th>Job code</th>
+    <th>Short Description</th>
+    <th>Last Completed</th>
+    <th>Actions</th>
+  </tr>
+<%
+   @quick_link_jmds.each do |job_metadata|
+     jle = JobLogEntry.find(job_metadata.last_jle_id) unless job_metadata.last_jle_id.nil?
+%>
+      <tr onmouseover='this.className="hoverOver";'
+          onmouseout='this.className="hoverOut";'
+          <%= raw 'onclick="document.location.href=\'' + job_log_entry_path(jle.id) + '\';"' unless jle.nil? %>
+      >
+    <td><%=h job_metadata.job_code %></td>
+	<td><%=h job_metadata.short_desc %></td>
+	<td width="180px"><%=jle.nil? ? "Not Run" : display_time(jle.finish_time) %></td>
+	<td style="text-align: center">
+      <%= link_to 'Plain Report', show_jle_multiple_result_path(id: jle.id,result_index: 0) unless jle.nil?%>
+    </td>
+
+
+
+  </tr>
+<% end %>
+</table>

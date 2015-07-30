@@ -1,0 +1,11 @@
+<% if !(current_user.nil? || @job_log_entry.get_email_hash.nil?) %>
+    &nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "E-mail Me this Job Result", job_log_entry_email_path({id: @job_log_entry, return_path: @email_return_path}) %>
+<% elsif (current_user.nil? && !@job_log_entry.get_email_hash.nil?) %>
+    <%= form_tag job_log_entry_email_path do %>
+        <%= label_tag :email_address, 'Email Address:'%>
+        <%= email_field_tag :email_address, cookies[:email_address] %>
+        <%= hidden_field_tag :return_path, @email_return_path %>
+        <%= submit_tag "Email this result"%>
+
+    <% end %>
+<% end %>

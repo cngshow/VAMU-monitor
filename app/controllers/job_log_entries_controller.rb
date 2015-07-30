@@ -90,6 +90,7 @@ class JobLogEntriesController < ApplicationController
 
   def show_jle(jle_id)
     @job_log_entry = JobLogEntry.find(jle_id)
+    @email_return_path = job_log_entry_path(@job_log_entry)
     jc = @job_log_entry.job_code
     @jmd = JobMetadata.job_code(jc)[0]
     @page_hdr = "Job Log Listing for:  " + jc
@@ -127,16 +128,23 @@ class JobLogEntriesController < ApplicationController
     jle_id = params[:id]
     result_index = params[:result_index].to_i
     @job_log_entry = JobLogEntry.find(jle_id)
+    @text_result = JobMetadata.find(@job_log_entry.job_code).email_content_type.eql?("text/plain")
+    @email_return_path = show_jle_multiple_result_path({id: @job_log_entry, result_index: result_index})
     @result = @job_log_entry.job_result(result_index)
     render :multiple, layout: false
   end
 
   def email_user
-    raise "You are not logged in!" if current_user.nil?
+    unless (current_user.nil? ^ params[:email_address].nil?)#exclusive or
+      raise "You are not logged in or no email address was supplied!!"
+    end
+    email_address = current_user.nil? ? params[:email_address] :current_user.email
+    cookies[:email_address] = email_address
     @job_log_entry = JobLogEntry.find(params[:id])
     email_hash = @job_log_entry.get_email_hash
     unless email_hash.nil?
-      email_hash[:recipients] = current_user.email
+      email_hash[:recipients] = email_address
+      $logger.error("emailing to " + email_hash[:recipients] + " ::  emailing from: " +  $application_properties['PST_Team'].to_s)
       email_hash[:from] = $application_properties['PST_Team']
       email_hash[:jle] = @job_log_entry
       $logger.info("Preparing to send cached result from controller")
@@ -146,9 +154,11 @@ class JobLogEntriesController < ApplicationController
       end
       @@request_pool.dispatch(my_task, "CACHED_EMAIL", "cached email", @job_log_entry)
     end
-    flash[:notice]= "Result sent to " << current_user.email unless email_hash.nil?
+    flash[:notice]= "Result sent to " << email_address unless email_hash.nil?
     flash[:error] = "Job Result is not e-mailable!" if email_hash.nil?
-    redirect_to(job_log_entry_path(@job_log_entry))
+    $logger.info(params.inspect)
+    redirect_to params[:return_path]
+      #redirect_to(job_log_entry_path(@job_log_entry))
   end
 
   private

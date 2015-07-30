@@ -35,6 +35,8 @@ class JobMetadata
   field :enabled_as_service, :type => Boolean, :default => false
   field :track_status_change, :type => Boolean, :default => false
   field :email_on_status_change_only, :type => Boolean, :default => false
+	#quick link, if set to true, means this job is displayable on the quick link page
+  field :quick_link, :type => Boolean, :default => false
   field :minutes_between_status_alert, :type =>Integer, :default => 60
 
   #status columns in the log apply to jobmetadatas that are tracking status (:track_status_change = true)

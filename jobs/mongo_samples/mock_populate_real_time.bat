@@ -1,0 +1,2 @@
+
+mongo --nodb --eval "var host='localhost',port=27017,database='das',audit_collection_name='audit_count',real_time_collection_name='real_time_data', lookback=10, size=16384,max_documents=180;" ./jobs/mongo_samples/populate_real_time_data.js

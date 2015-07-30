@@ -36,6 +36,17 @@ class JobMetadatasController < ApplicationController
     end
   end
 
+
+  def quick_links
+    @page_hdr = "Quick Link Report Listing"
+
+    @quick_link_jmds = @quick_link_job_code = JobEngine.instance.get_job_meta_datas.reject! {|jmd| !jmd.quick_link}
+    respond_to do |format|
+      format.html
+    end
+  end
+
+
   def auto_refresh
     session[:trackables_refresh] = ! session[:trackables_refresh]
     redirect_to trackables_path

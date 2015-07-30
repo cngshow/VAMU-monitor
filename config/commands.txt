@@ -24,6 +24,9 @@
 !environment = RUBY_EVAL_CODE Rails.env
 !java_home_env = RUBY_EVAL_CODE $application_properties['java_home_env']
 
+!email_html_start = echo RUBY_EVAL_FILE_VANILLA ./jobs/common_html/email_below.rb
+!email_html_end = echo ./jobs/common_html/email_above.html
+
 ###########################################################
 # VDAS_QUICKSTATS report
 ###########################################################
@@ -80,3 +83,10 @@ DAILY_REPORT_TEST, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13
 !root_url ==> WALGREENS_DAILY = RUBY_EVAL_CODE $application_properties['root_url']
 
 WALGREENS_DAILY, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !walgreens_rb !walgreens_rpt_date_arg !root_url !walgreens_jle_id !environment
+
+#SIMPLE_HTML, !email_html_start "A simple Test HTML report"
+SIMPLE_HTML,  echo EMAIL_RESULT_BELOW:
+SIMPLE_HTML, echo SUBJECT: A simple Test HTML report
+SIMPLE_HTML, cat ./jobs/cris.html
+SIMPLE_HTML, echo EMAIL_RESULT_ABOVE:
+#SIMPLE_HTML, cat  ./jobs/common_html/email_above.html

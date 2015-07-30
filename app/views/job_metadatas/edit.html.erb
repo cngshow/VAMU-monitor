@@ -63,6 +63,16 @@
 	            <%= f.text_field :max_execution_minutes, :size=>10, :value => f.object.max_execution_minutes %>
 	        </td>
 	    </tr>
+      <tr>
+        <td width="25%">
+          <%= f.label :quick_link, "Enable as a quick link:" %>
+          <br/>
+          <%= f.check_box :quick_link %>
+        </td>
+        <td width="75%" colspan="3">
+            &nbsp;
+        </td>
+      </tr>
 	    <tr>
 	        <td width="25%" valign="top">
 	            <%= f.label :enabled_as_service, "Enable to Run as a Service:" %>

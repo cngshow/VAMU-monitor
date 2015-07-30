@@ -1,0 +1,1 @@
+mongo ./insert_audit.js
