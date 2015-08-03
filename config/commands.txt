@@ -27,24 +27,21 @@
 !email_html_start = echo RUBY_EVAL_FILE_VANILLA ./jobs/common_html/email_below.rb
 !email_html_end = echo ./jobs/common_html/email_above.html
 
-###########################################################
-# VDAS_QUICKSTATS report
-###########################################################
-!vdas_quickstats_rpt ==> VDAS_QUICKSTATS = echo ./jobs/reports/vdas/quickstats.rb
-#!vdas_host ==> VDAS_QUICKSTATS = echo https://bhietestsapp4.vaco.va.gov/
-!vdas_now_ARG ==> VDAS_QUICKSTATS = RUBY_EVAL_CODE Time.now.strftime('%Y%m%d')
-#ARG_DEFINITION|VHLER DAS Quickstats End Date|Enter in the date that the report will end on in yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
-!vdas_lookback ==> VDAS_QUICKSTATS = echo 7
+################################################################################################################
+# DAS_QUICKSTATS_DAILY report
+################################################################################################################
+!quickstats_daily ==> DAS_QUICKSTATS_DAILY = echo ./jobs/reports/das/quickstats/quickstats_daily.rb
+!qs_now_ARG ==> DAS_QUICKSTATS_DAILY = RUBY_EVAL_CODE Time.now.strftime('%Y%m%d')
+#ARG_DEFINITION|DAS Quickstats Daily Report End Date|Enter in the date that the report will end on in yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
+!qs_lookback ==> DAS_QUICKSTATS_DAILY = echo 7
 
+DAS_QUICKSTATS_DAILY, echo EMAIL_RESULT_BELOW:
+DAS_QUICKSTATS_DAILY, echo SUBJECT: Rolling Week DAS Quickstats Summary
+DAS_QUICKSTATS_DAILY, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar  !quickstats_daily !qs_now_ARG !qs_lookback !environment
+DAS_QUICKSTATS_DAILY, echo EMAIL_RESULT_ABOVE:
 
-
-VDAS_QUICKSTATS, echo EMAIL_RESULT_BELOW:
-VDAS_QUICKSTATS, echo SUBJECT: Rolling Week Quickstats Summary
-VDAS_QUICKSTATS, cat !html_header
-VDAS_QUICKSTATS, !jruby_runner !vdas_quickstats_rpt !vdas_now_ARG !vdas_lookback
-VDAS_QUICKSTATS, cat !html_footer
-VDAS_QUICKSTATS, echo EMAIL_RESULT_ABOVE:
-
+################################################################################################################
+################################################################################################################
 TEST_RED_GREEN, echo Hi I am a RED/GREEN JOB
 #TEST_RED_GREEN, echo __RED_LIGHT__
 TEST_RED_GREEN, echo  __GREEN_LIGHT__
@@ -64,18 +61,23 @@ TEST_RED_GREEN, echo EMAIL_RESULT_ABOVE:
 MONGO_ALERT1, !mongo_shell !mongo_alert_args !mongo_script
 
 TEST_MULTIPLE, cat ./jobs/multiple_test.txt
-
-!daily_rpt_rb ==> DAILY_REPORT_TEST = echo ./jobs/reports/das/daily_report/daily_report.rb
-#!daily_rpt_date_arg ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
-!daily_rpt_date_arg ==> DAILY_REPORT_TEST = echo DAILY_RUN
+################################################################################################################
+# STR_dbq_daily report
+################################################################################################################
+!daily_rpt_rb ==> STR_DQB_DAILY_REPORT = echo ./jobs/reports/das/daily_report/daily_report.rb
+#!daily_rpt_date_arg ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
+!daily_rpt_date_arg ==> STR_DQB_DAILY_REPORT = echo DAILY_RUN
 #ARG_DEFINITION|Daily STR DBQ Report Date|Enter in the reporting date yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
-!daily_report_html ==> DAILY_REPORT_TEST = echo ./jobs/reports/das/daily_report/output.html
-!jle_id ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE JobLogEntry.job_code('DAILY_REPORT_TEST').finished(false).last.id
-!root_url ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE $application_properties['root_url']
-!plink ==> DAILY_REPORT_TEST = RUBY_EVAL_CODE $application_properties['platform_plink_path']
+!daily_report_html ==> STR_DQB_DAILY_REPORT = echo ./jobs/reports/das/daily_report/output.html
+!jle_id ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('STR_DQB_DAILY_REPORT').finished(false).last.id
+!root_url ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE $application_properties['root_url']
+!plink ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE $application_properties['platform_plink_path']
 
-DAILY_REPORT_TEST, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment !plink 2>&1
+STR_DQB_DAILY_REPORT, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment !plink 2>&1
 
+################################################################################################################
+# WALGREENS_DAILY immunization report
+################################################################################################################
 !walgreens_rb ==> WALGREENS_DAILY = echo ./jobs/reports/das/walgreens/walgreens.rb
 !walgreens_rpt_date_arg ==> WALGREENS_DAILY = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
 #ARG_DEFINITION|Daily Walgreens Immunization Report Date|Enter in the reporting date yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
@@ -83,6 +85,11 @@ DAILY_REPORT_TEST, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13
 !root_url ==> WALGREENS_DAILY = RUBY_EVAL_CODE $application_properties['root_url']
 
 WALGREENS_DAILY, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !walgreens_rb !walgreens_rpt_date_arg !root_url !walgreens_jle_id !environment
+
+################################################################################################################
+# ACA report
+################################################################################################################
+ACA_REPORT, cat ./jobs/reports/das/aca/aca_mock.html
 
 #SIMPLE_HTML, !email_html_start "A simple Test HTML report"
 SIMPLE_HTML,  echo EMAIL_RESULT_BELOW:

@@ -7,7 +7,7 @@ require 'net/http'
 
 module ReportHelper
   SHORT_DATE = '%-m/%-d'
-  LONG_DATE = '%A %B %d, %Y'
+  LONG_DATE = '%A, %B %d, %Y'
   NORMAL_DATE = '%m/%d/%Y'
   RPT_DATE = '%Y-%m-%d'
   REPORT_HELPER_MULTI_RESULTS = {}

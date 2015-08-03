@@ -2,7 +2,7 @@ class WelcomeController < ApplicationController
   #skip_before_action :login_required
 
   def index
-    @page_hdr = "Welcome to VHAMU - the Veteran's Health Alert Monitoring Utility"
+    @page_hdr = "Welcome to VAMU - The Veteran's Administration Alert Monitoring Utility"
     @admin_count = User.where(administrator: true).count
     @user_count =  User.count
 

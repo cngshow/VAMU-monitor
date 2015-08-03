@@ -3,9 +3,8 @@
 <% elsif (current_user.nil? && !@job_log_entry.get_email_hash.nil?) %>
     <%= form_tag job_log_entry_email_path do %>
         <%= label_tag :email_address, 'Email Address:'%>
-        <%= email_field_tag :email_address, cookies[:email_address] %>
+        <%= email_field_tag :email_address, cookies[:email_address], :size => 60 %>
         <%= hidden_field_tag :return_path, @email_return_path %>
         <%= submit_tag "Email this result"%>
-
     <% end %>
 <% end %>
