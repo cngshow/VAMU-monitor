@@ -23,6 +23,8 @@
 !html_footer = echo ./public/shamu_footer.html
 !environment = RUBY_EVAL_CODE Rails.env
 !java_home_env = RUBY_EVAL_CODE $application_properties['java_home_env']
+!java_jruby_jar = echo !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar
+!plink ==> STR_DQB_DAILY_AGGREGATION, DAILY_HOURLY_TRANSACTIONS, DAS_QUICKSTATS_DAILY = RUBY_EVAL_CODE $application_properties['platform_plink_path']
 
 !email_html_start = echo RUBY_EVAL_FILE_VANILLA ./jobs/common_html/email_below.rb
 !email_html_end = echo ./jobs/common_html/email_above.html
@@ -31,14 +33,11 @@
 # DAS_QUICKSTATS_DAILY report
 ################################################################################################################
 !quickstats_daily ==> DAS_QUICKSTATS_DAILY = echo ./jobs/reports/das/quickstats/quickstats_daily.rb
-!qs_now_ARG ==> DAS_QUICKSTATS_DAILY = RUBY_EVAL_CODE Time.now.strftime('%Y%m%d')
+!qs_now_ARG ==> DAS_QUICKSTATS_DAILY = RUBY_EVAL_CODE (Time.now - 24*60*60).strftime('%Y%m%d')
 #ARG_DEFINITION|DAS Quickstats Daily Report End Date|Enter in the date that the report will end on in yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
 !qs_lookback ==> DAS_QUICKSTATS_DAILY = echo 7
 
-DAS_QUICKSTATS_DAILY, echo EMAIL_RESULT_BELOW:
-DAS_QUICKSTATS_DAILY, echo SUBJECT: Rolling Week DAS Quickstats Summary
-DAS_QUICKSTATS_DAILY, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar  !quickstats_daily !qs_now_ARG !qs_lookback !environment
-DAS_QUICKSTATS_DAILY, echo EMAIL_RESULT_ABOVE:
+DAS_QUICKSTATS_DAILY, !java_jruby_jar !quickstats_daily !qs_now_ARG !qs_lookback !environment !plink
 
 ################################################################################################################
 ################################################################################################################
@@ -62,20 +61,6 @@ MONGO_ALERT1, !mongo_shell !mongo_alert_args !mongo_script
 
 TEST_MULTIPLE, cat ./jobs/multiple_test.txt
 ################################################################################################################
-# STR_dbq_daily report
-################################################################################################################
-!daily_rpt_rb ==> STR_DQB_DAILY_REPORT = echo ./jobs/reports/das/daily_report/daily_report.rb
-#!daily_rpt_date_arg ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
-!daily_rpt_date_arg ==> STR_DQB_DAILY_REPORT = echo DAILY_RUN
-#ARG_DEFINITION|Daily STR DBQ Report Date|Enter in the reporting date yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
-!daily_report_html ==> STR_DQB_DAILY_REPORT = echo ./jobs/reports/das/daily_report/output.html
-!jle_id ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('STR_DQB_DAILY_REPORT').finished(false).last.id
-!root_url ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE $application_properties['root_url']
-!plink ==> STR_DQB_DAILY_REPORT = RUBY_EVAL_CODE $application_properties['platform_plink_path']
-
-STR_DQB_DAILY_REPORT, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !daily_rpt_rb !daily_rpt_date_arg !daily_report_html !root_url !jle_id !environment !plink 2>&1
-
-################################################################################################################
 # WALGREENS_DAILY immunization report
 ################################################################################################################
 !walgreens_rb ==> WALGREENS_DAILY = echo ./jobs/reports/das/walgreens/walgreens.rb
@@ -84,7 +69,7 @@ STR_DQB_DAILY_REPORT, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7
 !walgreens_jle_id ==> WALGREENS_DAILY = RUBY_EVAL_CODE JobLogEntry.job_code('WALGREENS_DAILY').finished(false).last.id
 !root_url ==> WALGREENS_DAILY = RUBY_EVAL_CODE $application_properties['root_url']
 
-WALGREENS_DAILY, !java_home_env/bin/java -jar ./lib/jars/jruby-complete-1.7.13.jar !walgreens_rb !walgreens_rpt_date_arg !root_url !walgreens_jle_id !environment
+WALGREENS_DAILY, !java_jruby_jar !walgreens_rb !walgreens_rpt_date_arg !root_url !walgreens_jle_id !environment
 
 ################################################################################################################
 # ACA report
@@ -97,3 +82,48 @@ SIMPLE_HTML, echo SUBJECT: A simple Test HTML report
 SIMPLE_HTML, cat ./jobs/cris.html
 SIMPLE_HTML, echo EMAIL_RESULT_ABOVE:
 #SIMPLE_HTML, cat  ./jobs/common_html/email_above.html
+
+################################################################################################################
+# STR_dbq_daily report
+################################################################################################################
+!daily_rpt_rb ==> STR_DQB_DAILY_AGGREGATION, STR_DAILY_REPORT, DBQ_DAILY_REPORT, STORAGE_DAILY_REPORT, HAIMS_STR_DAILY_REPORT = echo ./jobs/reports/das/daily/daily_reports.rb
+
+!daily_rpt_agg_dates_arg ==> STR_DQB_DAILY_AGGREGATION = echo AGGREGATE_RANGE
+#ARG_DEFINITION|Daily Report Aggregation Date Range|Enter in the date in yyyymmdd-yyyymmdd format|17|Please enter a valid date in the form yyyymmdd-yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)-([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
+
+STR_DQB_DAILY_AGGREGATION, !java_jruby_jar !daily_rpt_rb !environment AGGREGATION !daily_rpt_agg_dates_arg !plink 2>&1
+
+################################################################################################################
+# STR, DBQ, STORAGE, and HAIMS daily reports
+################################################################################################################
+!root_url ==> STR_DAILY_REPORT, DBQ_DAILY_REPORT, STORAGE_DAILY_REPORT, HAIMS_STR_DAILY_REPORT = RUBY_EVAL_CODE $application_properties['root_url']
+!daily_rpt_date_arg ==> STR_DAILY_REPORT, DBQ_DAILY_REPORT, STORAGE_DAILY_REPORT, HAIMS_STR_DAILY_REPORT = RUBY_EVAL_CODE (Time.now - (24*60*60)).strftime('%Y%m%d')
+#ARG_DEFINITION|Daily Report Date:|Enter in the reporting date in yyyymmdd format|8|Please enter a valid date in yyyymmdd format|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
+
+## STR_DAILY_REPORT ##
+!jle_id ==> STR_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('STR_DAILY_REPORT').finished(false).last.id
+STR_DAILY_REPORT, !java_jruby_jar !daily_rpt_rb !environment STR !daily_rpt_date_arg !root_url !jle_id 2>&1
+
+## DBQ_DAILY_REPORT ##
+!jle_id ==> DBQ_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('DBQ_DAILY_REPORT').finished(false).last.id
+DBQ_DAILY_REPORT, !java_jruby_jar !daily_rpt_rb !environment DBQ !daily_rpt_date_arg !root_url !jle_id 2>&1
+
+## STORAGE_DAILY_REPORT ##
+!jle_id ==> STORAGE_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('STORAGE_DAILY_REPORT').finished(false).last.id
+STORAGE_DAILY_REPORT, !java_jruby_jar !daily_rpt_rb !environment STORAGE !daily_rpt_date_arg !root_url !jle_id 2>&1
+
+## HAIMS_STR_DAILY_REPORT ##
+!jle_id ==> HAIMS_STR_DAILY_REPORT = RUBY_EVAL_CODE JobLogEntry.job_code('HAIMS_STR_DAILY_REPORT').finished(false).last.id
+!haims_output_html ==> STR_DQB_DAILY_REPORT = echo ./jobs/reports/das/daily/str/haims_output.html
+
+HAIMS_STR_DAILY_REPORT, !java_jruby_jar !daily_rpt_rb !environment HAIMS !daily_rpt_date_arg !root_url !jle_id !haims_output_html 2>&1
+
+################################################################################################################
+# daily hourly transactions report
+################################################################################################################
+!daily_trans_rpt_rb ==> DAILY_HOURLY_TRANSACTIONS = echo ./jobs/reports/das/daily/transactions/daily_transactions.rb
+!trans_rpt_date_ARG ==> DAILY_HOURLY_TRANSACTIONS = RUBY_EVAL_CODE (Time.now - 1*24*60*60).to_date.strftime('%Y%m%d')
+#ARG_DEFINITION|DAS Daily Transactions Report Date|Enter in the reporting date in yyyymmdd format|8|Please enter a valid date in the form yyyymmdd|^([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229)$
+
+DAILY_HOURLY_TRANSACTIONS, !java_jruby_jar !daily_trans_rpt_rb !trans_rpt_date_ARG !plink 2>&1
+

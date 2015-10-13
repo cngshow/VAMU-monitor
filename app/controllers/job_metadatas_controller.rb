@@ -40,7 +40,8 @@ class JobMetadatasController < ApplicationController
   def quick_links
     @page_hdr = "Quick Link Report Listing"
 
-    @quick_link_jmds = @quick_link_job_code = JobEngine.instance.get_job_meta_datas.reject! {|jmd| !jmd.quick_link}
+    @quick_link_jmds = JobEngine.instance.get_job_meta_datas.reject! {|jmd| !jmd.quick_link}
+    @quick_link_jmds.sort_by! { |jmd| jmd.report_name.downcase }
     respond_to do |format|
       format.html
     end

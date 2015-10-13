@@ -51,8 +51,8 @@ def get_chart_data
 end
 
 logpaths = []
-(1..2).each do |i| # change to 5
-  (1..10).each do |log_num| # change to 10
+(1..5).each do |i| # change to 5
+  (1..2).each do |log_num| # change to 10
     logpaths << "logs/ms2.0#{i}/das/proxy.log.#{log_num}"
   end
 end
@@ -60,7 +60,7 @@ end
 @plink = 'c:\\putty\\plink'
 @aca_data = {}
 
-(4..4).each do |i| #change to 4..5 for papp5 logs
+(4..5).each do |i|
   logpaths.each do |log|
     putty = %{#{@plink} dasuser@bhiepapp#{i}.r04.med.va.gov -pw dasprod@123! cat #{log} > c:\\temp\\temp.log}
     `#{putty}`#todo can't use backtick because it reads the file as a string

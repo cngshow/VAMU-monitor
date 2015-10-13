@@ -44,7 +44,7 @@
             overlayDiv.style.top = divEl.offsetTop + (chartArea.height * 1.25) + "px";
             overlayDiv.style.left = divEl.offsetLeft + (chartArea.width * 1.18) + "px";
             overlayDiv.innerHTML = immuneData[immuneData.length - 1][1];
-        };
+        }
 
         var chart = new google.visualization.ColumnChart(divEl);
         //google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, data));
@@ -52,39 +52,9 @@
     }
 </script>
 <style>
-    .DBQ_stubChart2 {
+    .stubChart {
         width: 45%;
         padding-top: 10px;
-    }
-
-    .DBQ_textHeading {
-        background-color: #4F81BD;
-        float: left;
-        width: 100%;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        font-weight: bold;
-    }
-
-    .dbqBottomLabel {
-        background-color: #4F81BD;
-        color: white;
-        border: 1px solid #4F81BD;
-        padding: 5px;
-        font-weight: bold;
-        font-size: larger;
-    }
-
-    .dbqTotals {
-        background-color: white;
-        color: black;
-        font-weight: bold;
-        font-size: larger;
-        width: 200px;
-        padding: 5px;
-        text-align: center;
-        vertical-align: bottom;
-        border: 1px solid #4F81BD;
     }
 
     .overlay-marker {
@@ -96,14 +66,58 @@
         font-size: 16px;
         font-weight: bold;
     }
+    .textHeading {
+        float: left;
+        width: 100%;
+        height: 20px;
+    }
+    div.chart_label_right {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: right;
+        text-align: right;
+        width: 50%;
+        height: 25px;
+    }
+
+    div.chart_label_left {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: left;
+        text-align: left;
+        width: 50%;
+        height: 25px;
+    }
+
+    .bottomLabel {
+        background-color: #1B49A0;
+        color: white;
+        border: 1px solid #1B49A0;
+        padding: 5px;
+        height: 18px;
+        width: 250px;
+        text-align: center;
+    }
+
+    .totals {
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        font-size: larger;
+        width: 225px;
+        height: 18px;
+        padding: 5px;
+        text-align: center;
+        vertical-align: bottom;
+        border: 1px solid #1B49A0;
+    }
 </style>
 
-<div style="height: 540px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
-  <div style="color:white; float: left; width: 100%; margin-bottom: 5px">
-    <div style="float: left; width: 80%; font-weight: bold;">DAS Immunizations (Walgreens): Key Statistics</div>
-    <div style="float: right;font-weight: bold;">Through <%= format_date(@rpt_date) %></div>
-  </div>
-  <div class="DBQ_textHeading">&nbsp;&nbsp;Running Totals</div>
+<div style="height: 540px; width: 99%; background-color:navy; color:white; border: 10px solid navy;">
+  <div class="chart_label_left">DAS Immunizations (Walgreens): Key Statistics</div>
+  <div class="chart_label_right">Through <%= format_date(@rpt_date) %></div>
+  <div class="textHeading">Running Totals</div>
+
   <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
     DAS: Daily DBQ Submissions - Column Chart
   </div>
@@ -112,13 +126,13 @@
   </div>-->
   <% summary = get_summary_data %>
   <div style="width: 100%; float: left;">
-    <div class="DBQ_stubChart2" style="float: left;">
-      <div style="float: left; " class="dbqBottomLabel">Total Immunizations:</div>
-      <div id="total_dbq_submitted_div" style="float: left;" class="dbqTotals"><%= format_number(summary[:total]) %></div>
+    <div class="stubChart" style="float: left;">
+      <div style="float: left; " class="bottomLabel">Total Immunization Submissions:</div>
+      <div id="total_dbq_submitted_div" style="float: left;" class="totals"><%= format_number(summary[:total]) %></div>
     </div>
-    <div class="DBQ_stubChart2" style="float: right; ">
-      <div id="total_size_div" style="float: right; " class="dbqTotals"><%= calc_total_size.to_s %> MB</div>
-      <div style="float: right; " class="dbqBottomLabel">Total Size of Immunization Documents:</div>
+    <div class="stubChart" style="float: right; ">
+      <div id="total_size_div" style="float: right; " class="totals"><%= calc_total_size.to_s %> MB</div>
+      <div style="float: right; " class="bottomLabel">Total Size of Immunization Documents:</div>
     </div>
   </div>
 </div>

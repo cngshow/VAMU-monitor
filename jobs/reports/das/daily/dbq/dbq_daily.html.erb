@@ -1,0 +1,120 @@
+<style>
+    h1 {
+        color: navy;
+        text-align: center;
+    }
+
+    h3 {
+        color: navy;
+        text-align: center;
+    }
+
+    div#main {
+        width: 1200px;
+    }
+
+    div#rpt {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .strDbqTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border: 1px solid #A9A9A9;
+        border-collapse: collapse;
+    }
+
+    .strDbqTable th, .strDbqTable td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #A9A9A9;
+    }
+
+    .strDbqTable th {
+        background-color: navy;
+        color: white;
+        height: 40px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .strDbqTable td {
+        color: black;
+        text-align: center;
+    }
+
+    .strDbqTable tr.totals {
+        background-color: #A9A9A9;
+        color: black;
+        text-align: center;
+        border: 1px solid black;
+    }
+</style>
+<%
+   rpt_date = @doc[:_id] #should we make the id epoch (to_i it!)
+%>
+<div id="main">
+  <h1>DAS Daily DBQ Report for <%= format_date(rpt_date, LONG_DATE) %></h1>
+
+  <h3>Reporting Period from <%= eastern_date_time_label(rpt_date) %> to <%= eastern_date_time_label(rpt_date, 1) %></h3>
+
+  <div id="rpt" style="margin: 15px;">
+    <table class="strDbqTable" style="width:750px">
+      <caption>DBQ Daily Summary: <%= format_date(rpt_date, SHORT_DATE) %></caption>
+      <tr>
+        <th>Vendor</th>
+        <th>Documents Received</th>
+        <th>Veterans</th>
+        <th>Facilities</th>
+        <th>DBQ Exam Types</th>
+      </tr>
+      <tr>
+        <% capri_counts_arr = get_dbq_counts(@doc[:dbq][:capri_line]) %>
+        <td>Capri</td>
+        <td><%= format_number(capri_counts_arr[0]) %></td>
+        <td><%= format_number(capri_counts_arr[1]) %></td>
+        <td><%= format_number(capri_counts_arr[2]) %></td>
+        <td><%= format_number(capri_counts_arr[3]) %></td>
+      </tr>
+      <tr>
+        <% external_vendor_counts = get_dbq_counts(@doc[:dbq][:external_vendor_line], true) %>
+        <td>External Vendors</td>
+        <td><%= format_number(external_vendor_counts[0]) %></td>
+        <td><%= format_number(external_vendor_counts[1]) %></td>
+        <td>N/A</td>
+        <td><%= format_number(external_vendor_counts[2]) %></td>
+      </tr>
+      <tr class="totals">
+        <% total_counts_arr = get_dbq_counts(@doc[:dbq][:das_line]) %>
+        <td>Totals:</td>
+        <td><%= format_number(total_counts_arr[0]) %></td>
+        <td><%= format_number(total_counts_arr[1]) %></td>
+        <td><%= format_number(total_counts_arr[2]) %></td>
+        <td><%= format_number(total_counts_arr[3]) %></td>
+      </tr>
+    </table>
+    <br><br>
+    <table class="strDbqTable" style="width:485px">
+      <caption>DBQs - Updated Totals: <%= format_date(rpt_date, SHORT_DATE) %></caption>
+      <tr>
+        <th>Mongo Collection</th>
+        <th>Oracle DB</th>
+        <th>Total Documents</th>
+      </tr>
+      <tr>
+        <td><%= format_number(@doc[:dbq][:completed_count]) %></td>
+        <td>16,447</td>
+        <td><%= format_number(@doc[:dbq][:completed_count] + 16447) %></td>
+      </tr>
+    </table>
+    <br><br>
+    <% if @show_charts %>
+        <%= render_erb('./jobs/reports/das/daily/dbq/dbq_chart_slider.html.erb') %>
+    <% else %>
+        <p>Click the link below to view this report with charts included.<br></p>
+        <a href="<%= @rpt_link_url %>1">DAS DBQ Daily Report with charts</a>
+    <% end %>
+    <br><br>
+  </div>
+</div>

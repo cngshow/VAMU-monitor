@@ -1,116 +1,91 @@
-<html>
-<head>
-  <%= render_erb('jobs/reports/das/daily_report/str_dbq_daily.css.html.erb') %>
-</head>
-<body>
+<style>
+    h1 {
+        color: navy;
+        text-align: center;
+    }
+
+    h3 {
+        color: navy;
+        text-align: center;
+    }
+
+    div#main_result {
+        width: 1200px;
+    }
+
+    div#rpt_result {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        margin: 15px;
+    }
+
+    .strDbqTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border: 1px solid #A9A9A9;
+        border-collapse: collapse;
+    }
+
+    .strDbqTable th, .strDbqTable td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #A9A9A9;
+    }
+
+    .strDbqTable th {
+        background-color: navy;
+        color: white;
+        height: 40px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .strDbqTable td {
+        color: black;
+        text-align: center;
+    }
+
+    .strDbqTable tr.totals {
+        background-color: #A9A9A9;
+        color: black;
+        text-align: center;
+        border: 1px solid black;
+    }
+</style>
 <div id="main_result">
-  <div id="rpt_result" style="margin: 15px;">
-    <h2>Immunizations (Walgreens) Activity Report</h2>
+  <div id="rpt_result">
+    <h1>Immunizations (Walgreens) Activity Report</h1>
 
     <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %></h3>
 
-    <div id="moroni" style="display: <%= @moroni ? 'block' : 'none' %>">
-      <style>
-          .row {
-              width: 100%;
-              float: left;
-              padding-top: 2px;
-              padding-bottom: 2px;
-          }
-
-          .subRow {
-              float: left;
-              margin-left: 85px;
-              width: 100%;
-              padding-top: 6px;
-          }
-
-          .lightColors {
-              background-color: #4F81BD;
-              color: white;
-          }
-
-          .darkColors {
-              background-color: #1F497D;
-              color: white;
-          }
-      </style>
-      <% summary = get_summary_data %>
-      <div style="border: 1px solid #4F81BD; width: 460px; height: 145px; padding: 8px;">
-        <div style="border: 3px solid #4F81BD; width: 100%; height: 100%">
-          <div style="width: 100%; float: left; padding: 2px;" class="lightColors">
-            <span style="font-weight: bold; float: left; text-decoration: underline; ">
-                Immunizations:
-            </span>
-            <span style="float: left; margin-left: 15px;">
-                <%= format_date(@rpt_date, SHORT_DATE) %>
-            </span>
-          </div>
-          <div class="row darkColors">
-            <span style="float: left; margin-left: 85px;">
-                <%= format_number(summary[:rpt_date_count]) %>&nbsp;&nbsp;Immunizations received
-            </span>
-          </div>
-          <div class="row lightColors">
-            <span style="float: left; font-style: italic;">
-                Updated Totals
-            </span>
-          </div>
-          <div class="row darkColors">
-            <span style="float: left; margin-left: 45px;">
-                <%= format_number(summary[:total]) %>&nbsp;&nbsp;Total To-Date
-            </span>
-          </div>
-          <div style="width: 100%; float: left; padding-bottom: 2px;">
-            <span class="subRow">
-                <%= format_number(summary[2014]) %>&nbsp;&nbsp;in 2014
-            </span>
-            <span class="subRow">
-                <%= format_number(summary[2015]) %>&nbsp;&nbsp;in 2015 (current year)
-            </span>
-          </div>
-        </div>
-      </div>
-      <div style="height: 10px"></div>
-      <br><br>
-      <%= render_erb('jobs/reports/das/walgreens/_walgreens_chart.html.erb') if @moroni %>
-      <br><br>
-
-    </div>
-
-    <div id="moroni" style="display: <%= @moroni ? 'none' : 'block' %>">
-      <table class="strDbqTable" style="width:750px">
-        <caption>Immunization Results: Updated Totals</caption>
-        <tr>
-          <th>Received on <%= format_date(@rpt_date, SHORT_DATE) %></th>
-          <%
-             summary = get_summary_data
-             summary.keys.each do |k|
-          %>
-              <%= "<th>Received in #{k}</th>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
-          <% end %>
-          <th>Total to Date</th>
-        </tr>
-        <tr>
-          <td><%= format_number(summary[:rpt_date_count]) %></td>
-          <% summary.each_pair do |k, v| %>
-              <%= "<td>#{format_number(v)}</td>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
-          <% end %>
-          <td><%= format_number(summary[:total]) %></td>
-        </tr>
-      </table>
-      <% if @include_chart %>
-          <br><br>
-          <%= render_erb('jobs/reports/das/walgreens/_walgreens_chart.html.erb') %>
-          <br><br>
-      <% end %>
-      <% unless @include_chart %>
-          <br><br>
-          <a href="<%= @rpt_link_url %>">Click here to view the chart in the browser</a>
-          <br><br>
-      <% end %>
-    </div>
+    <table class="strDbqTable" style="width:750px; align-content: center">
+      <caption>Immunization Results: Updated Totals</caption>
+      <tr>
+        <th>Received on <%= format_date(@rpt_date, SHORT_DATE) %></th>
+        <%
+           summary = get_summary_data
+           summary.keys.each do |k|
+        %>
+            <%= "<th>Received in #{k}</th>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
+        <% end %>
+        <th>Total to Date</th>
+      </tr>
+      <tr>
+        <td><%= format_number(summary[:rpt_date_count]) %></td>
+        <% summary.each_pair do |k, v| %>
+            <%= "<td>#{format_number(v)}</td>" unless k.eql?(:rpt_date_count) || k.eql?(:total) %>
+        <% end %>
+        <td><%= format_number(summary[:total]) %></td>
+      </tr>
+    </table>
+    <% if @include_chart %>
+        <br><br>
+        <%= render_erb('jobs/reports/das/walgreens/_walgreens_chart.html.erb') %>
+        <br><br>
+    <% else %>
+        <br><br>
+        <a href="<%= @rpt_link_url + '1' %>">Click here to view the charts in the browser</a>
+        <br><br>
+    <% end %>
   </div>
 </div>
-</body>
-</html>

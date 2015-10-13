@@ -41,12 +41,15 @@ class JobLogEntry
   scope :status_not, -> status {where(:status.ne => status) }
   scope :email_sent, -> bool {where(:email_sent => bool)}
   scope :user_jobs, -> jc {job_code(jc).where(:run_by.ne => PST_SYSTEM)}
+  scope :system_jobs, -> {where(:run_by => PST_SYSTEM)}
   scope :started_after, -> time {where(:start_time.gt => time) }
   scope :created_after, -> time {where(:created_at.gt => time) }
   scope :before, -> jle {where(:_id.lt => jle._id, :job_code => jle.job_code).order_by(:_id => :desc) }
   scope :after, -> jle {where(:_id.gt => jle._id, :job_code => jle.job_code).order_by(:_id => :asc) }
   scope :after_inclusive, -> jle {where(:_id.gte => jle._id, :job_code => jle.job_code, :status.ne => PST_UNKNOWN).order_by(:_id => :asc) }
   scope :tracked, -> bool { where(bool ? {:status.in => [PST_RED,PST_GREEN]} : {:status.in => [nil,PST_UNKNOWN]}) }
+  scope :youngest, -> {order_by(:finish_time => :desc).limit(1)}
+  scope :quick_link_jle, -> job_code {system_jobs(job_code).finished(true).youngest}
 
   # scopes using building block scopes
   scope :last_tracked_status_change, -> jc, status_known { job_code(jc).finished(true).tracked(status_known).status_changed(true).order_by(:finish_time => :desc).limit(1) }

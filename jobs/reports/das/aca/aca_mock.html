@@ -1,0 +1,158 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1.1', {packages: ['corechart', 'bar']});
+        google.setOnLoadCallback(drawAcaDailyCharts);
+        var dailyData = [
+            [new Date('06/07/2015'),11489, 11489],
+            [new Date('06/08/2015'),7402, 7402],
+            [new Date('06/09/2015'),6514, 6514],
+            [new Date('06/10/2015'),176468, 176461],
+            [new Date('06/11/2015'),174003, 173972],
+            [new Date('06/12/2015'),147639, 147357],
+            [new Date('06/13/2015'),33205, 33206],
+            [new Date('06/14/2015'),16353, 16353],
+            [new Date('06/15/2015'),201087, 201087],
+            [new Date('06/16/2015'),208358, 208356],
+            [new Date('06/17/2015'),186907, 186906],
+            [new Date('06/18/2015'),173286, 173284],
+            [new Date('06/19/2015'),131331, 131281],
+            [new Date('06/20/2015'),29226, 29226],
+            [new Date('06/21/2015'),13051, 13051],
+            [new Date('06/22/2015'),49248, 49245],
+            [new Date('06/23/2015'),7113, 7112],
+            [new Date('06/24/2015'),152206, 152206],
+            [new Date('06/25/2015'),166765, 166765],
+            [new Date('06/26/2015'),147698, 147698],
+            [new Date('06/27/2015'),38422, 38422],
+            [new Date('06/28/2015'),17773, 17773],
+            [new Date('06/29/2015'),166929, 166929],
+            [new Date('06/30/2015'),17243, 17243]];
+
+        function drawAcaDailyCharts() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', 'Date');
+            data.addColumn('number', 'Requests');
+            data.addColumn('number', 'Responses');
+
+            for (var i = 0; i < dailyData.length; i++) {
+                var row = dailyData[i];
+                data.addRow([row[0], row[1], row[2]]);
+            }
+
+            var options = {
+                title: 'DAS/ACA Transactions',
+                titleTextStyle: {fontSize: 18},
+                legend: {position: 'top', alignment: 'center'},
+
+                hAxis: {
+                    title: 'Date',
+                    titleTextStyle: {bold: true, fontSize: 12},
+                    textStyle: {fontSize: 9},
+                    gridlines: {color: 'none', count: 15},
+                    format: 'M/d/yyyy'
+                },
+                vAxis: {
+                    title: 'Transactions'
+                }
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('ACA_daily_columnChart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+    <style>
+        .STR_stubChart {
+            width: 99.5%; height: 280px; background-color:white; color: black;
+            border: 2px solid #1F497D;
+        }
+
+        .STR_stubChart2 {
+            width: 49.7%; background-color:white; color: black;
+            border: 2px solid #1F497D;
+        }
+
+        .STR_textHeading {
+            background-color:#4F81BD; float: left; width: 100%;
+        }
+
+        .row {
+            width: 100%; float: left; padding-top: 2px; padding-bottom: 2px;
+        }
+        .subRow {
+            float: left; margin-left: 85px;  width: 100%; padding-top: 6px;
+        }
+        .lightColors {
+            background-color:#4F81BD;  color: white;
+        }
+        .darkColors {
+            background-color:#1F497D; color: white;
+        }
+    </style>
+</head>
+
+<body style="height: 1000px">
+
+<h2>ACA/DAS Activity Report</h2>
+<div style="border: 1px solid #4F81BD; width: 460px; height: 140px; padding: 8px;">
+    <div style="border: 3px solid #4F81BD; width: 100%; height: 100%; background-color:#1F497D;">
+        <div style="width: 100%; float: left; padding: 2px;" class="lightColors">
+            <span style="font-weight: bold; float: left; text-decoration: underline; ">
+                ACA/DAS::
+            </span>
+            <span style="float: left; margin-left: 15px;">
+                6/30
+            </span>
+        </div>
+        <div class="row darkColors">
+            <span style="float: left; margin-left: 85px;">
+                6,278&nbsp;&nbsp;Requests
+            </span>
+        </div>
+        <div class="row darkColors">
+            <span style="float: left; margin-left: 85px;">
+                6,278&nbsp;&nbsp;Responses
+            </span>
+        </div>
+        <div class="row lightColors">
+            <span style="float: left; font-style: italic;">
+                Updated Totals
+            </span>
+        </div>
+        <div class="row darkColors">
+            <span style="float: left; margin-left: 85px;">
+                2,538,221&nbsp;&nbsp;Requests
+            </span>
+        </div>
+        <div class="row darkColors">
+            <span style="float: left; margin-left: 85px;">
+                2,532,882&nbsp;&nbsp;Responses
+            </span>
+        </div>
+    </div>
+</div>
+<div style="height: 10px"></div>
+<div style="height: 590px; width: 97%; background-color:#1F497D; color:white; border: 12px solid #1F497D;">
+    <div style="color:white; float: left; width: 100%;">
+        <div style="float: left; width: 80%;">DAS Affordable Care Act (ACA): Key Statistics</div>
+        <div style="float: right;">Through 6/30/2015</div>
+    </div>
+    <div style="" class="STR_textHeading">Details for 6/30/2015</div>
+    <div id="STR_first_pass_combo_div" style="float: left;" class="STR_stubChart"><div style="position: relative;">
+        <div dir="ltr" style="position: relative; width: 90%; height: 280px;"><div aria-label="A chart." style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"><svg aria-label="A chart." style="overflow: hidden;" height="280" width="1512"><defs id="defs"><clipPath id="_ABSTRACT_RENDERER_ID_1"><rect height="173" width="1204" y="54" x="154"></rect></clipPath></defs><rect fill="#ffffff" stroke-width="0" stroke="none" height="280" width="1512" y="0" x="0"></rect><g><text fill="#000000" stroke-width="0" stroke="none" font-weight="bold" font-size="15" font-family="Arial" y="20.75" x="154" text-anchor="start">DAS/ACA Transactions 24 hrs</text></g><g><rect fill="#ffffff" fill-opacity="0" stroke-width="0" stroke="none" height="15" width="209" y="31" x="651"></rect><g><rect fill="#ffffff" fill-opacity="0" stroke-width="0" stroke="none" height="15" width="99" y="31" x="651"></rect><g><text fill="#222222" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="43.75" x="687" text-anchor="start">Requests</text></g><rect fill="#3366cc" stroke-width="0" stroke="none" height="15" width="30" y="31" x="651"></rect></g><g><rect fill="#ffffff" fill-opacity="0" stroke-width="0" stroke="none" height="15" width="86" y="31" x="774"></rect><g><text fill="#222222" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="43.75" x="810" text-anchor="start">Results</text></g><rect fill="#dc3912" stroke-width="0" stroke="none" height="15" width="30" y="31" x="774"></rect></g></g><g><rect fill="#ffffff" fill-opacity="0" stroke-width="0" stroke="none" height="173" width="1204" y="54" x="154"></rect><g clip-path="url(file:///C:/Users/VHAISPBOWMAG/AppData/Local/Microsoft/Windows/Temporary%20Internet%20Files/Content.Outlook/WU9OWKOE/ACA-Report-v0.4.html#_ABSTRACT_RENDERER_ID_1)"><g><rect fill="#cccccc" stroke-width="0" stroke="none" height="1" width="1204" y="226" x="154"></rect><rect fill="#cccccc" stroke-width="0" stroke="none" height="1" width="1204" y="183" x="154"></rect><rect fill="#cccccc" stroke-width="0" stroke="none" height="1" width="1204" y="140" x="154"></rect><rect fill="#cccccc" stroke-width="0" stroke="none" height="1" width="1204" y="97" x="154"></rect><rect fill="#cccccc" stroke-width="0" stroke="none" height="1" width="1204" y="54" x="154"></rect></g><g><rect fill="#3366cc" stroke-width="0" stroke="none" height="97" width="16" y="129" x="138"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="139" width="16" y="87" x="192"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="2" width="16" y="224" x="247"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="5" width="16" y="221" x="302"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="0.7740000000000009" width="16" y="225.726" x="356"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="0.6020000000000039" width="16" y="225.898" x="411"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="0.945999999999998" width="16" y="225.554" x="466"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="1.117999999999995" width="16" y="225.382" x="520"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="7" width="16" y="219" x="575"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="18" width="16" y="208" x="630"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="21" width="16" y="205" x="684"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="28" width="16" y="198" x="739"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="25" width="16" y="201" x="794"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="31" width="16" y="195" x="848"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="30" width="16" y="196" x="903"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="33" width="16" y="193" x="958"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="29" width="16" y="197" x="1012"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="30" width="16" y="196" x="1067"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="29" width="16" y="197" x="1122"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="24" width="16" y="202" x="1176"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="26" width="16" y="200" x="1231"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="27" width="16" y="199" x="1286"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="21" width="16" y="205" x="1341"></rect><rect fill="#3366cc" stroke-width="0" stroke="none" height="28" width="16" y="198" x="1395"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="97" width="16" y="129" x="155"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="139" width="16" y="87" x="209"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="2" width="16" y="224" x="264"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="5" width="16" y="221" x="319"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="0.7740000000000009" width="16" y="225.726" x="373"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="0.6020000000000039" width="16" y="225.898" x="428"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="0.945999999999998" width="16" y="225.554" x="483"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="1.117999999999995" width="16" y="225.382" x="537"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="7" width="16" y="219" x="592"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="19" width="16" y="207" x="647"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="21" width="16" y="205" x="701"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="28" width="16" y="198" x="756"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="25" width="16" y="201" x="811"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="31" width="16" y="195" x="865"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="30" width="16" y="196" x="920"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="33" width="16" y="193" x="975"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="29" width="16" y="197" x="1029"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="30" width="16" y="196" x="1084"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="29" width="16" y="197" x="1139"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="24" width="16" y="202" x="1193"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="26" width="16" y="200" x="1248"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="27" width="16" y="199" x="1303"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="21" width="16" y="205" x="1358"></rect><rect fill="#dc3912" stroke-width="0" stroke="none" height="28" width="16" y="198" x="1412"></rect></g><g><rect fill="#333333" stroke-width="0" stroke="none" height="173" width="1" y="54" x="154"></rect><rect fill="#333333" stroke-width="0" stroke="none" height="1" width="1204" y="226" x="154"></rect></g></g><g></g><g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="154.5" text-anchor="middle">12 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="263.8636363636364" text-anchor="middle">2 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="373.22727272727275" text-anchor="middle">4 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="482.5909090909091" text-anchor="middle">6 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="591.9545454545455" text-anchor="middle">8 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="701.3181818181819" text-anchor="middle">10 AM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="810.6818181818182" text-anchor="middle">12 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="920.0454545454546" text-anchor="middle">2 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="1029.409090909091" text-anchor="middle">4 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="1138.7727272727273" text-anchor="middle">6 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="1248.1363636363637" text-anchor="middle">8 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="247.41666666666666" x="1357.5" text-anchor="middle">10 PM</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="231.75" x="139" text-anchor="end">0</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="188.75" x="139" text-anchor="end">400</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="145.75" x="139" text-anchor="end">800</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="102.75" x="139" text-anchor="end">1,200</text></g><g><text fill="#444444" stroke-width="0" stroke="none" font-size="15" font-family="Arial" y="59.75" x="139" text-anchor="end">1,600</text></g></g></g><g><g><text fill="#222222" stroke-width="0" stroke="none" font-style="italic" font-size="15" font-family="Arial" y="270.0833333333333" x="756" text-anchor="middle">Time (ET)</text></g><g><text fill="#222222" stroke-width="0" stroke="none" transform="rotate(-90 56.75 140.5)" font-style="italic" font-size="15" font-family="Arial" y="140.5" x="56.75" text-anchor="middle">Counts</text></g></g><g></g></svg><div style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;" aria-label="A tabular representation of the data in the chart."><table><thead><tr><th>Time of Day</th><th>Requests</th><th>Results</th></tr></thead><tbody><tr><td>12 pm</td><td>909</td><td>909</td></tr><tr><td>1 am</td><td>1300</td><td>1300</td></tr><tr><td>2 am</td><td>28</td><td>28</td></tr><tr><td>3 am</td><td>52</td><td>52</td></tr><tr><td>4 am</td><td>9</td><td>9</td></tr><tr><td>5 am</td><td>7</td><td>7</td></tr><tr><td>6 am</td><td>11</td><td>11</td></tr><tr><td>7 am</td><td>13</td><td>13</td></tr><tr><td>8 am</td><td>76</td><td>73</td></tr><tr><td>9 am</td><td>181</td><td>184</td></tr><tr><td>10 am</td><td>208</td><td>208</td></tr><tr><td>11 am</td><td>274</td><td>274</td></tr><tr><td>12 pm</td><td>243</td><td>243</td></tr><tr><td>1 pm</td><td>298</td><td>298</td></tr><tr><td>2 pm</td><td>288</td><td>288</td></tr><tr><td>3 pm</td><td>317</td><td>317</td></tr><tr><td>4 pm</td><td>281</td><td>281</td></tr><tr><td>5 pm</td><td>293</td><td>291</td></tr><tr><td>6 pm</td><td>276</td><td>278</td></tr><tr><td>7 pm</td><td>231</td><td>231</td></tr><tr><td>8 pm</td><td>252</td><td>252</td></tr><tr><td>9 pm</td><td>260</td><td>260</td></tr><tr><td>10 pm</td><td>205</td><td>205</td></tr><tr><td>11 pm</td><td>266</td><td>266</td></tr></tbody></table></div></div></div><div aria-hidden="true" style="display: none; position: absolute; top: 290px; left: 1522px; white-space: nowrap; font-family: Arial; font-size: 15px;">Results</div><div></div></div></div>
+    <div style="" class="STR_textHeading">Running Totals</div>
+    <div style="width: 100%; float: left;">
+        <div style="width: 100%; float: left;">
+            <div style="float: left; width: 99.5%;">
+                <div style="width: 100%;" class="STR_stubChart2">
+                    <div id="ACA_daily_columnChart_div" style="height: 240px;">Column Chart</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>

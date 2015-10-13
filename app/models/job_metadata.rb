@@ -37,6 +37,7 @@ class JobMetadata
   field :email_on_status_change_only, :type => Boolean, :default => false
 	#quick link, if set to true, means this job is displayable on the quick link page
   field :quick_link, :type => Boolean, :default => false
+  field :quick_link_rpt_index, :type => Integer, :default => 0
   field :minutes_between_status_alert, :type =>Integer, :default => 60
 
   #status columns in the log apply to jobmetadatas that are tracking status (:track_status_change = true)
@@ -64,7 +65,7 @@ class JobMetadata
   class << self
     def job_code(jc)
       where(:job_code => jc)
-    end
+		end
   end
 
 	#scope :by_job_code, lambda {|jc| where(:job_code => jc) }
@@ -72,7 +73,7 @@ class JobMetadata
 
 	#validates_associated :escalations  #use this if escalations are moved to a separate page
 
-	validates_length_of       :short_desc,    :within => 0..50
+	validates_length_of       :short_desc,    :within => 0..100
 	validates_numericality_of :max_execution_minutes, :integer_only => true, :greater_than_or_equal_to => 0, :message => 'is not an integer value. Please specify the max execution time in minutes.'
 	validates_numericality_of :stale_after_min, :integer_only => true, :greater_than_or_equal_to => 0, :message => 'is not an integer value. Please specify the time period beyond which the data becomes stale in minutes.'
 
@@ -83,6 +84,10 @@ class JobMetadata
 	validates_presence_of :introscope_long_desc, :if => Proc.new{|jmd| jmd.use_introscope_long_desc}
 	validates_presence_of :stale_after_min, :minutes_between_status_alert, :max_execution_minutes
   validates_uniqueness_of :job_code
+
+  def report_name
+    (self[:short_desc].nil? || self[:short_desc].strip.length == 0 ? self[:_id] : self[:short_desc]).strip
+  end
 
   def get_escalation_colors
 		colors = []

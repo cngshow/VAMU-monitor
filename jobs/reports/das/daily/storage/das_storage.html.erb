@@ -1,0 +1,91 @@
+<style>
+    h1 {
+        color: navy;
+        text-align: center;
+    }
+
+    h3 {
+        color: navy;
+        text-align: center;
+    }
+
+    div#main {
+        width: 1000px;
+    }
+
+    div#rpt {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .storageTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border: 1px solid #A9A9A9;
+        border-collapse: collapse;
+    }
+
+    .storageTable th, .storageTable td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #A9A9A9;
+    }
+
+    .storageTable th {
+        background-color: navy;
+        color: white;
+        height: 40px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .storageTable td {
+        color: black;
+        text-align: center;
+    }
+</style>
+<%
+   # get the storage usage points in order to build the reporting verbiage
+   pts_array = charting_data_points(@doc)
+   p = pts_array[0][:core][:used]#C prev
+   c = pts_array[1][:core][:used]#C current
+   i = (c - p) * 1024.0
+   p = pts_array[0][:audit][:used]#L prev
+   c = pts_array[1][:audit][:used]#L current
+   p = (c - p) * 1024.0
+   r = (i + p)
+   rpt_date = @doc[:_id]
+%>
+
+<div id="main">
+  <h1>DAS Daily Storage Report for <%= format_date(rpt_date, LONG_DATE) %></h1>
+
+  <h3>Reporting Period from <%= eastern_date_time_label(rpt_date) %> to <%= eastern_date_time_label(rpt_date, 1) %></h3>
+
+  <div id="rpt" style="margin: 15px;">
+    <table class="storageTable" style="width:515px">
+      <caption>Overall Capacity Utilization of DAS Data Store: <%= format_date(rpt_date, SHORT_DATE) %></caption>
+      <tr>
+        <th></th>
+        <th>Core Collection</th>
+        <th>Audit Collection</th>
+        <th>Total Storage</th>
+      </tr>
+      <tr>
+        <td>Storage Consumed</td>
+        <td><%= "#{'%.1f' % i}" %> GB</td>
+        <td><%= "#{'%.1f' % p}" %> GB</td>
+        <td><%= "#{'%.1f' % r}" %> GB</td>
+      </tr>
+    </table>
+    <br><br>
+    <% if @show_charts %>
+        The chart below reflects the total storage consumed by the various DAS applications, including STRs and DBQs:<br><br>
+        <%= render_erb('./jobs/reports/das/daily/storage/das_storage_chart.html.erb') %>
+    <% else %>
+        <p>Click the link below to view this report with charts included.<br></p>
+        <a href="<%= @rpt_link_url %>1">DAS Storage Utilization Daily Report with charts</a>
+    <% end %>
+    <br><br>
+  </div>
+</div>

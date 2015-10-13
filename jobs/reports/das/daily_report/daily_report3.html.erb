@@ -87,6 +87,17 @@
     <h2>Team - a quick status on DAS STR & DBQ activity since the last report:</h2>
 
     <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %>:</h3>
+    <!--<h6>Time Period in Eastern Time from <%#= eastern_date_time(@rpt_date) %> to <%#= eastern_date_time(@rpt_date) %></h6>-->
+
+    <% unless @show_charts %>
+        <a href="<%= @rpt_link_url %>1">Click here to view the charts in the browser (current format)</a>
+        <br>
+        <a href="<%= @rpt_link_url %>2">Click here to view the charts in the browser (table format)</a>
+        <br>
+        <a href="<%= @rpt_link_url %>3">Click here to view the charts in the browser (narrative format)</a>
+        <br>
+        <br>
+    <% end %>
 
     <div style="border: 1px solid #4F81BD; width: 490px; height: 385px; padding: 12px;">
       <div style="border: 3px solid #4F81BD; width: 100%; height: 47%">
@@ -110,18 +121,18 @@
         </div>
         <div class="row darkColors">
             <span style="float: left; margin-left: 85px;">
-                <%= format_time_h_m_s(@doc[:audit][:breakdown][:tot_trans_time]) %>&nbsp;&nbsp;Total Processing Time
+                <%= format_time_h_m_s(@doc[:str][:audit][:breakdown][:tot_trans_time]) %>&nbsp;&nbsp;Total Processing Time
             </span>
         </div>
         <div style="width: 100%; float: left; padding-bottom: 2px;">
             <span class="subRow">
-                <%= format_number(@doc[:audit][:breakdown][:pass1_count] + @doc[:audit][:breakdown][:pass2_count]) %>&nbsp;&nbsp;Transactions
+                <%= format_number(@doc[:str][:audit][:breakdown][:pass1_count] + @doc[:audit][:breakdown][:pass2_count]) %>&nbsp;&nbsp;Transactions
             </span>
             <span class="subRow" style="margin-left: 125px;">
-                <%= format_number(@doc[:audit][:breakdown][:pass1_count]) %>&nbsp;&nbsp;first-pass
+                <%= format_number(@doc[:str][:audit][:breakdown][:pass1_count]) %>&nbsp;&nbsp;first-pass
             </span>
             <span class="subRow" style="margin-left: 125px;">
-                <%= format_number(@doc[:audit][:breakdown][:pass2_count]) %>&nbsp;&nbsp;second-pass
+                <%= format_number(@doc[:str][:audit][:breakdown][:pass2_count]) %>&nbsp;&nbsp;second-pass
             </span>
         </div>
       </div>
@@ -171,7 +182,7 @@
 
     <div class="divSpacer"></div>
 
-    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb') %>
+    <%= render_erb('./jobs/reports/das/daily_report/str_chart.html.erb') if @show_charts%>
 
     <div class="divSpacer"></div>
 
@@ -259,11 +270,11 @@
 
     <div class="divSpacer"></div>
 
-    <%= render_erb('./jobs/reports/das/daily_report/dbq_chart.html.erb') %>
+    <%= render_erb('./jobs/reports/das/daily_report/dbq_chart.html.erb') if @show_charts %>
 
     <div class="divSpacer"></div>
 
-    <%= render_erb('./jobs/reports/das/daily_report/data_storage3.html.erb') %>
+    <%= render_erb('./jobs/reports/das/daily_report/data_storage3.html.erb') if @show_charts %>
 
   </div>
 </div>

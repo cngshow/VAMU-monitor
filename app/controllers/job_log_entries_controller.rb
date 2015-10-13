@@ -128,9 +128,13 @@ class JobLogEntriesController < ApplicationController
     jle_id = params[:id]
     result_index = params[:result_index].to_i
     @job_log_entry = JobLogEntry.find(jle_id)
-    @text_result = JobMetadata.find(@job_log_entry.job_code).email_content_type.eql?("text/plain")
+    jmd = JobMetadata.find(@job_log_entry.job_code)
+    @text_result = jmd.email_content_type.eql?('text/plain')
     @email_return_path = show_jle_multiple_result_path({id: @job_log_entry, result_index: result_index})
     @result = @job_log_entry.job_result(result_index)
+
+    # set the page title to the job short description so the tabs in the browser have a label
+    @page_title = jmd.short_desc
     render :multiple, layout: false
   end
 
@@ -158,7 +162,6 @@ class JobLogEntriesController < ApplicationController
     flash[:error] = "Job Result is not e-mailable!" if email_hash.nil?
     $logger.info(params.inspect)
     redirect_to params[:return_path]
-      #redirect_to(job_log_entry_path(@job_log_entry))
   end
 
   private

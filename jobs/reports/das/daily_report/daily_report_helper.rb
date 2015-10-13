@@ -1,4 +1,5 @@
 module DailyReportHelper
+=begin
   def get_str_audit_hash(rpt_date, str_count)
     #this takes around 4 minutes to complete
     dt = get_gmt(rpt_date)
@@ -19,7 +20,7 @@ module DailyReportHelper
     pass2_count = 0
 
    data.each do |line|
-      unless line.include?("[dasuser@bhiepapp4")
+     if line =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*$/
         cols = line.split(',').map(&:strip)
         tot_trans_time = cols[0]
         hour = '%02d' % Time.parse(cols[0]).hour
@@ -37,7 +38,7 @@ module DailyReportHelper
     #get the total transaction time (add an hour and format as a string)
     if tot_trans_time
       tot_trans_time = Time.parse(tot_trans_time)
-      hour = tot_trans_time.hour + 1
+      hour = tot_trans_time.hour + 1 #todo change this based on @dst
       min = tot_trans_time.min
       sec = tot_trans_time.sec
       tot_trans_time = "#{'%02d' % hour}:#{'%02d' % min}:#{'%02d' % sec}"
@@ -52,6 +53,7 @@ module DailyReportHelper
     end
     audit_hash
   end
+=end
 
   def get_str_audit_as_js(data, pass)
     hourly = data[:audit][:breakdown][:hourly_breakdown]
@@ -78,14 +80,14 @@ module DailyReportHelper
     end
 
     # now build the js
-    prev_day = (19..23).to_a
+    # prev_day = (19..23).to_a
     ret = "data: \n[ "
     d = data[:_id]
 
     pass_hash.each_pair do |h,v|
       hr = h.to_i
-      dt = (prev_day.include?(hr) ? d - (60*60*24) : d)
-      dt = dt + (60*60*hr)
+      # dt = (prev_day.include?(hr) ? d - (60*60*24) : d)
+      dt = d + (60*60*hr)
 
       if (pass.eql?('1p'))
         ret << "[{v: new Date(#{dt.year}, #{dt.month}, #{dt.day}, #{hr}, 0, 0), f: '#{format_date(dt,'%l %p').strip}'}, #{v[:success]}, #{v[:failure]}, #{v[:avg_resp_time]}],\n"

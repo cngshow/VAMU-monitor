@@ -73,7 +73,7 @@ begin
 
   prop_hash = get_prop_hash("./das_charting.properties", $logger)
   @final_rpt = TABLE.clone
-  host = prop_hash["host"] #https://bhietestsapp4.vaco.va.gov/"
+  host = prop_hash["host"] #https://bhiepapp4.r04.med.va.gov/"
   ecrud = prop_hash["ecrud"] #"ecrud/v1/core/"
 
   process_rpt(query_hash, host, ecrud, @@days_back, @@rpt_date).each_pair do |date, rpt_hash|

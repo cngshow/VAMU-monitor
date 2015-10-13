@@ -1,62 +1,58 @@
-<html>
-<head>
-  <style>
-      div#rpt_result {
-          font-family: Verdana, Geneva, sans-serif;
-          font-size: 12px;
-      }
+<style>
+    div#rpt_result {
+        font-family: Verdana, Geneva, sans-serif;
+        font-size: 12px;
+    }
 
-      div#main_result {
-          width: 100%;
-          height: 95%;
-          color: #000077;
-      }
+    div#main_result {
+        width: 100%;
+        height: 95%;
+        color: #000077;
+    }
 
-      .strDbqTable {
-          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-          border: 1px solid #A9A9A9;
-          border-collapse: collapse;
-      }
+    .strDbqTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border: 1px solid #A9A9A9;
+        border-collapse: collapse;
+    }
 
-      .strDbqTable th, .strDbqTable td {
-          padding: 10px;
-          text-align: center;
-          border: 1px solid #A9A9A9;
-      }
+    .strDbqTable th, .strDbqTable td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #A9A9A9;
+    }
 
-      .strDbqTable tr.totals {
-          background-color: #A9A9A9;
-          color: black;
-          text-align: center;
-          font-weight: bold;
-          border: 1px solid black;
-      }
+    .strDbqTable tr.totals {
+        background-color: #A9A9A9;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid black;
+    }
 
-      .strDbqTable tr.header {
-          background-color: navy;
-          color: white;
-          text-align: center;
-      }
+    .strDbqTable tr.header {
+        background-color: navy;
+        color: white;
+        text-align: center;
+    }
 
-      .strDbqTable tr.odd {
-          background-color: #b4d4e2;
-          color: black;
-          text-align: center;
-      }
+    .strDbqTable tr.odd {
+        background-color: #b4d4e2;
+        color: black;
+        text-align: center;
+    }
 
-      .strDbqTable tr.even {
-          background-color: #ffffff;
-          color: black;
-          text-align: center;
-      }
-  </style>
-</head>
-<body>
+    .strDbqTable tr.even {
+        background-color: #ffffff;
+        color: black;
+        text-align: center;
+    }
+</style>
 <div id="main_result">
   <div id="rpt_result" style="margin: 15px;">
     <h2>DAS QuickStats Report</h2>
 
-    <h3>Summary for <%= format_date(@rpt_date, LONG_DATE) %></h3>
+    <h3>Summary for <%= format_date(@data.keys[-1].to_s, LONG_DATE) %></h3>
     <br>
     <table class="strDbqTable" style="width:950px">
       <caption><%= "Rolling Week from <b>#{@data.keys[0].to_s}</b> thru <b>#{@data.keys[-1].to_s}</b>" %></caption>
@@ -67,14 +63,17 @@
         <th>DBQs from CAPRI<br>and External Vendors</th>
         <th><br>eCFTs</th>
         <th>Walgreens<br>Immunizations</th>
-        <th>Direct Secure Messaging<br>Documents Received</th>
+        <th>Direct Messaging<br>Documents Received</th>
+        <th>ACA<br>CMS to DAS</th>
       </tr>
       <%
          totals = {}
+         totals[:cms_to_das] = 0
          idx = 0
          @collections.each { |col_sym| totals[col_sym] = 0 }
          @data.each_pair do |dt, data_hash|
            idx += 1
+           totals[:cms_to_das] += data_hash[:aca][:cms_to_das].to_i
       %>
           <tr class="<%= idx.odd? ? 'odd' : 'even' %>">
             <td><%= dt.strftime('%a, %b %d') %></td>
@@ -84,6 +83,7 @@
             %>
                 <td><%= format_number(data_hash[col_sym]) %></td>
             <% end %>
+            <td><%= format_number(data_hash[:aca][:cms_to_das]) %></td>
           </tr>
       <% end %>
       <tr class="totals">
@@ -91,9 +91,8 @@
         <% @collections.each do |col_sym| %>
             <td><%= format_number(totals[col_sym]) %></td>
         <% end %>
+        <td><%= format_number(totals[:cms_to_das]) %></td>
       </tr>
     </table>
   </div>
 </div>
-</body>
-</html>

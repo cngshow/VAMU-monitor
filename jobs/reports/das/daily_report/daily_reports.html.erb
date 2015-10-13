@@ -1,0 +1,48 @@
+<html>
+<head>
+  <style>
+      h1 {
+          color: navy;
+          text-align: center;
+      }
+
+      h3 {
+          color: navy;
+          text-align: center;
+      }
+
+      div#main {
+          width: 1000px;
+      }
+
+      div#rpt {
+          font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+          font-size: 14px;
+          font-weight: bold;
+      }
+  </style>
+</head>
+<body>
+<%
+   @rpt_date = @doc[:_id] #should we make the id epoch (to_i it!)
+%>
+<div id="main">
+  <h1>Daily Reports for <%= format_date(@rpt_date, LONG_DATE) %></h1>
+  <h3>Reporting Period from <%= eastern_date_time_label(@rpt_date) %> to <%= eastern_date_time_label(@rpt_date, 1) %></h3>
+  <br>
+  <br>
+  <div id="rpt" style="margin: 15px;">
+    <p>Click the links below to view the daily charts and statistics for DAS during the reporting period.<br></p>
+    <a href="<%= @rpt_link_url %>1">DAS STR Daily Report</a>
+    <br>
+    <br>
+    <a href="<%= @rpt_link_url %>2">DAS DBQ Daily Report</a>
+    <br>
+    <br>
+    <a href="<%= @rpt_link_url %>3">DAS Additional Storage Report</a>
+    <br>
+    <br>
+  </div>
+</div>
+</body>
+</html>

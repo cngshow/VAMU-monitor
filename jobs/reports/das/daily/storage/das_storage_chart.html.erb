@@ -1,0 +1,89 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<style>
+    div#chart_label_right {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: left;
+        width: 80%;
+        height: 25px;
+    }
+
+    div#chart_label_left {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: right;
+        height: 25px;
+    }
+
+    .pieCartCore {
+        width: 49.5%;
+        height: 90%;
+        float: left;
+        border: 1px solid #16365D;
+    }
+
+    .pieCartAudit {
+        width: 49%;
+        height: 90%;
+        float: right;
+        border: 1px solid #16365D;
+    }
+</style>
+<script>
+    google.load('visualization', '1', {packages: ['corechart', 'bar', 'controls']});
+
+    function drawPieCharts() {
+        <% pts = disk_space_points(@doc) %>
+        var configAudit = {
+            data: [['Used Disk Space', <%= pts[:audit][:used]%>], ['Available Disk Space', <%=pts[:audit][:avail]%>]],
+            div: "audit_pie_div",
+            name: "Audit",
+            capacity: "5.1 TB"
+        };
+        drawPieStorage(configAudit);
+
+        var configCore = {
+            data: [['Used Disk Space', <%= pts[:core][:used]%>], ['Available Disk Space', <%=pts[:core][:avail]%>]],
+            div: "core_pie_div",
+            name: "Core",
+            capacity: "20 TB"
+        };
+        drawPieStorage(configCore);
+    }
+
+    function drawPieStorage(config) {
+        console.log(config);
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Disk Space');
+        data.addColumn('number', 'TB');
+
+        data.addRows(config.data);
+        var config_name = config.name + (config.name.toUpperCase().equals('CORE') ? ' (20 TB Total)' : ' (5.1 TB Total)');
+
+        var options = {
+            title: 'DAS Data Store: ' + config_name,
+            is3D: true,
+            slices: {
+                0: {offset: 0.4, textStyle: {fontSize: 14, bold: true}},
+                1: {color: 'lightsteelblue', textStyle: {color: 'black', fontSize: 14, bold: true}}
+            },
+            pieStartAngle: 72,
+            titleTextStyle: {fontSize: 16}
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById(config.div));
+        chart.draw(data, options);
+    }
+
+    google.setOnLoadCallback(drawPieCharts);
+</script>
+<%
+   rpt_date = @doc[:_id]
+%>
+<div style="width: 99%; height: 350px; background-color:navy; color:white; border: 10px solid navy;">
+  <div id="chart_label_right">DAS Data Store: Capacity & Usage Statistics in TB</div>
+  <div id="chart_label_left"><%= format_date(rpt_date) %></div>
+
+  <div id="core_pie_div" class="pieCartCore"></div>
+  <div id="audit_pie_div" class="pieCartAudit"></div>
+</div>

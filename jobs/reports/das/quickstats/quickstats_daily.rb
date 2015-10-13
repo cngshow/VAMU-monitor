@@ -1,13 +1,16 @@
 require './jobs/helpers/mongo_job_connector'
 require './jobs/helpers/report_helper'
+require './jobs/reports/das/daily/affordable_care_act'
 require 'date'
 require 'erb'
 include MongoJobConnector
 include ReportHelper
+include AffordableCareAct
 
 @rpt_date = ARGV[0]
 lookback = ARGV[1].to_i
 env = ARGV[2].to_sym
+plink = ARGV[3]
 
 # establish mongo connections das core
 initialize_mongo env
@@ -32,7 +35,7 @@ end
 rpt_date = Date.parse(@rpt_date)
 dates = []
 
-(1..lookback).each do |i|
+(0...lookback).each do |i|
   dates << rpt_date - i
 end
 
@@ -51,6 +54,7 @@ dates.each do |d|
   @data[d] = {}
   @collections.each do |col|
     @data[d][col] = 0
+    @data[d][:aca] = AffordableCareAct.get_aca_daily_count(plink, d.to_s)
   end
 end
 
@@ -60,6 +64,11 @@ end
   load_rpt_data(start_date, end_date, col)
 end
 
-# p @data
+# print out the report results
+puts "EMAIL_RESULT_BELOW:\n"
+puts "SUBJECT: Rolling Week DAS Quickstats Summary - #{format_date(@rpt_date, RPT_DATE)}"
 puts render_erb('./jobs/reports/das/quickstats/quickstats.html.erb')
+puts "EMAIL_RESULT_ABOVE:\n"
+
+# disconnect all data sources
 disconnect_all

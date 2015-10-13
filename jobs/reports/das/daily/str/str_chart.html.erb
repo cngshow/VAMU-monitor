@@ -1,20 +1,54 @@
 <style>
     .STR_stubChart {
-        width: 49.7%; height: 175px; background-color:white; color: black;
+        width: 49.7%;
+        height: 175px;
+        background-color: white;
+        color: black;
         border: 2px solid #16365D;
     }
 
     .STR_stubChart2 {
-        width: 49.7%; background-color:white; color: black;
+        width: 49.7%;
+        background-color: white;
+        color: black;
         border: 2px solid #16365D;
     }
 
     .STR_textHeading {
-        background-color:#1B49A0; float: left; width: 100%;
+        background-color: navy;
+        float: left;
+        width: 100%;
     }
+
+    div#chart_label_right {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: left;
+        width: 80%;
+        height: 25px;
+    }
+
+    div#chart_label_left {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: right;
+        height: 25px;
+    }
+
 </style>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script>
-    function drawSTRComboChart(config){
+    google.load('visualization', '1', {packages: ['corechart', 'bar', 'controls']});
+    google.setOnLoadCallback(drawSTRCharts);
+
+    function drawSTRCharts() {
+        drawSTRAuditCharts();
+        drawSTRDownloadsBarChart();
+        drawSTRDownloadsColumnChart();
+        drawSTRDownloadSizeScatter();
+    }
+
+    function drawSTRComboChart(config) {
         var data = new google.visualization.DataTable();
 
         for (var i = 0; i < config.cols.length; i++) {
@@ -29,7 +63,7 @@
             seriesType: "bars",
             series: config.series,
             vAxes: {
-                0: {title: 'Counts' }, // Left y-axis.
+                0: {title: 'Counts'}, // Left y-axis.
                 1: {side: 'right', title: 'Seconds', viewWindow: config.viewWindow, gridlines: {count: 11}} // Right y-axis.
             },
             legend: {position: 'top', alignment: 'center'},
@@ -53,8 +87,7 @@
                 1: {targetAxisIndex: 0},
                 2: {targetAxisIndex: 1, type: "line", color: 'green', lineDashStyle: [4, 4]}
             },
-            viewWindow: {min: 1, max: 20},
-            <%= StrAuditDaily.get_str_audit_as_js(@doc, '1p')%>
+            <%= get_str_audit_as_js(@doc, '1p')%>
         };
 
         drawSTRComboChart(firstPassConfig);
@@ -71,19 +104,9 @@
                 2: {targetAxisIndex: 0, type: "scatter", color: 'silver', pointSize: 4},
                 3: {targetAxisIndex: 1, type: "line", color: 'green', lineDashStyle: [4, 4]}
             },
-            viewWindow: {min: 1, max: 300},
-            <%= StrAuditDaily.get_str_audit_as_js(@doc, '2p')%>
+            <%= get_str_audit_as_js(@doc, '2p')%>
         };
         drawSTRComboChart(secondPassConfig);
-    }
-
-    google.setOnLoadCallback(drawSTRCharts);
-
-    function drawSTRCharts() {
-        drawSTRAuditCharts();
-        drawSTRDownloadsBarChart();
-        drawSTRDownloadsColumnChart();
-        drawSTRDownloadSizeScatter();
     }
 
     function drawSTRDownloadsBarChart() {
@@ -120,7 +143,7 @@
         chart.draw(data, options);
     }
 
-   function drawSTRDownloadsColumnChart() {
+    function drawSTRDownloadsColumnChart() {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
         data.addColumn('number', 'STR Documents');
@@ -129,7 +152,7 @@
         data.addRows(dataArr);
 
         var options = {
-            title: 'DAS: Documents Downloaded from HAIMS',
+            title: 'DAS: Documents Downloaded from HAIMS (last 120 Days)',
             titleTextStyle: {fontSize: 18},
             isStacked: true,
             legend: {position: 'none', alignment: 'end'},
@@ -143,7 +166,12 @@
             vAxis: {
                 title: 'Number of documents downloaded',
                 titleTextStyle: {bold: true, fontSize: 12},
-                gridlines: {count: 11}
+                gridlines: {count: 11},
+//                viewWindowMode:'explicit',
+                viewWindow: {
+                    max:50000,
+                    min:0
+                }
             }
         };
 
@@ -151,7 +179,7 @@
         chart.draw(data, options);
     }
 
-   function drawSTRDownloadSizeScatter(){
+    function drawSTRDownloadSizeScatter() {
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'Document #');
         data.addColumn('number', 'Document less than 100 MB');
@@ -162,8 +190,8 @@
 
         var options = {
             title: 'DAS: Size of STR Documents received from HAIMS (in MB), last 24 hrs',
-            hAxis: {title: 'Document #', gridlines: {count: 6} },
-            vAxis: {title: 'Document Size (In MB)', gridlines: {count: 8} },
+            hAxis: {title: 'Document #', gridlines: {count: 6}},
+            vAxis: {title: 'Document Size (In MB)', gridlines: {count: 8}},
             legend: {position: 'top', alignment: 'center'}
         };
 
@@ -172,16 +200,15 @@
         chart.draw(data, options);
     }
 </script>
-<div style="height: 664px; width: 97%; background-color:#16365D; color:white; border: 12px solid #16365D;">
-  <div style="color:white; float: left; width: 100%;">
-    <div style="float: left; width: 80%;">DAS Service Treatment Records (STRs): Key Statistics</div>
-    <div style="float: right;">Through <%=format_date(@rpt_date, NORMAL_DATE)%></div>
-  </div>
-  <div style="" class="STR_textHeading">Details for <%=format_date(@rpt_date, NORMAL_DATE)%></div>
+<div style="height: 664px; width: 99%; background-color:navy; color:white; border: 12px solid navy;">
+  <div id="chart_label_right">DAS Service Treatment Records (STRs): Key Statistics</div>
+  <div id="chart_label_left">Through <%= format_date(@doc[:_id]) %></div>
+
+  <div style="" class="STR_textHeading">Details for <%= format_date(@doc[:_id], NORMAL_DATE) %></div>
   <div id="STR_first_pass_combo_div" style="float: left;" class="STR_stubChart">Picture 7 - Stack Chart, dual vAxis</div>
   <div id="STR_second_pass_combo_div" style="float: right;" class="STR_stubChart">Picture 8 - Stack Chart, dual vAxis</div>
-  <div style="" class="STR_textHeading">Running Totals</div>
-  <div sytle="width: 100%; float: left;">
+  <div style="width: 100%" class="STR_textHeading">Running Totals</div>
+  <div style="width: 100%; float: left;">
     <div style="float: left; width: 49.7%;">
       <div style="width: 100%;" class="STR_stubChart2">
         <div id="STR_download__columnChart_div" style="height: 220px;">Column Chart</div>

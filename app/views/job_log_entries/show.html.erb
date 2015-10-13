@@ -77,11 +77,11 @@
   <tr>
     <td width="100%" colspan="2" style="border: solid navy 1px;background-color: #ffffee;">
       <b>Job Results:</b><br><br>
-      <% html_regex = Regexp.new('<[hH][tT][mM][lL].*</[hH][tT][mM][lL]', Regexp::MULTILINE) %>
-      <%= raw "<pre>" unless html_regex.match(@job_log_entry.job_result.to_s) %>
-      <!--Do not add any spacing before the line below (there is a pre tag here :-) ) !!-->
-      <%= raw @job_log_entry.job_result %>
-      <%= raw "</pre>" unless html_regex.match(@job_log_entry.job_result.to_s) %>
+      <% content_type_regex = Regexp.new('text/plain') %>
+      <%= raw "<pre>" if content_type_regex.match(@jmd.email_content_type) %>
+<!--Do not add any spacing before the line below (there may be a pre tag here :-) ) !!-->
+<%= raw @job_log_entry.job_result %>
+      <%= raw "</pre>" if content_type_regex.match(@jmd.email_content_type)  %>
       <br>
       <br>
     </td>

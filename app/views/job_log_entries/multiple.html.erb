@@ -1,63 +1,43 @@
-<style>
-    #maincontent {
-        position: fixed;
-        top: 90px; /*Set top value to headerDiv plus the page_nav height*/
-        left: 10px; /*set to the width of the menu div*/
-        right: 0;
-        bottom: 20px; /*Set bottom value to HeightOfBottomFrameDiv*/
-        overflow: auto;
-        /*border-left: 1px navy solid;*/
-    }
-
-    .innertube {
-        margin: 10px; /*Margins for inner DIV inside each DIV (to provide padding)*/
-    }
-
-    * html body {
-        /*IE6 hack*/
-        padding: 90px 0 45px 0; /*Set value to headerDiv 0 footerDiv 0)*/
-    }
-
-    * html #maincontent {
-        /*IE6 hack*/
-        height: 100%;
-        width: 100%;
-    }
-
-    #flash_notice {
-        width: 400px;
-        border: 2px solid green;
-        padding: 7px;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
-        background-color: #f0f0f0;
-    }
-
-    #flash_error {
-        width: 400px;
-        border: 2px solid red;
-        padding: 7px;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
-        background-color: #f0f0f0;
-    }
-
-
-</style>
-
-
-<!--%= content_tag(:div, raw(flash[:alert]), :id => "flash_alert") if flash[:alert] %-->
-<%= content_tag(:div, raw(flash[:notice]), :id => "flash_notice") if flash[:notice] %>
-<%= content_tag(:div, raw(flash[:error]), :id => "flash_error") if flash[:error] %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <style>
+      #flash_notice {
+          width: 400px;
+          border: 2px solid green;
+          padding: 7px;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+          background-color: #f0f0f0;
+      }
+      #flash_error {
+          width: 400px;
+          border: 2px solid red;
+          padding: 7px;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+          background-color: #f0f0f0;
+      }
+      span.run_at_footer {
+          font-size: smaller;
+          height: auto;
+          padding: 12px;
+          margin-bottom: 20px;
+      }
+  </style>
+  <title><%= @page_title %></title>
+</head>
+<body>
+<%= content_tag(:div, raw(flash[:notice]), :id => 'flash_notice') if flash[:notice] %>
+<%= content_tag(:div, raw(flash[:error]), :id => 'flash_error') if flash[:error] %>
 <%= render :partial => 'email_job_result' %>
-<br>
-<div id="maincontent">
-  <div class="innertube">
-    <% if @text_result %>
-        <pre><%= @result %></pre>
-    <% else %>
-        <%= raw @result %>
-    <% end %>
-  </div>
-</div>
 
+<% if @text_result %>
+    <pre><%= @result.gsub(/.*EMAIL_RESULT_.*/,'').gsub(/.*SUBJECT:.*/,'') %></pre>
+<% else %>
+    <%= raw @result.gsub(/.*EMAIL_RESULT_.*/,'').gsub(/.*SUBJECT:.*/,'') %>
+<% end %>
+<span class="run_at_footer"><%= "Report Generated: #{h display_time(@job_log_entry.finish_time)}"%></span>
+</body>
+</html>

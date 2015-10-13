@@ -1,27 +1,22 @@
 <table class="hovertable">
   <tr>
-    <th>Job code</th>
-    <th>Short Description</th>
+    <th>Report Name</th>
     <th>Last Completed</th>
     <th>Actions</th>
   </tr>
 <%
-   @quick_link_jmds.each do |job_metadata|
-     jle = JobLogEntry.find(job_metadata.last_jle_id) unless job_metadata.last_jle_id.nil?
+   @quick_link_jmds.each do |jmd|
+     jle = JobLogEntry.job_code(jmd.job_code).system_jobs.finished(true).youngest.first
 %>
       <tr onmouseover='this.className="hoverOver";'
           onmouseout='this.className="hoverOut";'
-          <%= raw 'onclick="document.location.href=\'' + job_log_entry_path(jle.id) + '\';"' unless jle.nil? %>
+          <%= raw 'onclick="document.location.href=\'' + show_jle_multiple_result_path(id: jle.id, result_index: jmd.quick_link_rpt_index) + '\';"' unless jle.nil? %>
       >
-    <td><%=h job_metadata.job_code %></td>
-	<td><%=h job_metadata.short_desc %></td>
-	<td width="180px"><%=jle.nil? ? "Not Run" : display_time(jle.finish_time) %></td>
-	<td style="text-align: center">
-      <%= link_to 'Plain Report', show_jle_multiple_result_path(id: jle.id,result_index: 0) unless jle.nil?%>
+	<td><%=h jmd.report_name %></td>
+	<td width="200px"><%=jle.nil? ? "Not Run" : display_time(jle.finish_time) %></td>
+	<td style="text-align: center; width: 250px">
+      <%= link_to 'Text Only Report', job_log_entry_path(jle.id) unless jle.nil?%>
     </td>
-
-
-
   </tr>
 <% end %>
 </table>

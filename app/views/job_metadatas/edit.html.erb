@@ -41,7 +41,7 @@
 	        <td width="100%" colspan="4">
 	            <%= f.label :short_desc, "Short Description:" %>
 	            <br/>
-	            <%= f.text_field :short_desc, :maxlength => 50 %>
+	            <%= f.text_field :short_desc, :maxlength => 100 %>
 	        </td>
 	    </tr>
 	    <tr>
@@ -70,7 +70,9 @@
           <%= f.check_box :quick_link %>
         </td>
         <td width="75%" colspan="3">
-            &nbsp;
+          <%= f.label :quick_link_rpt_index, "Default Report Index from QuickLink Listing:" %>
+          <br/>
+          <%= f.text_field :quick_link_rpt_index, :size=>5, :value => f.object.quick_link_rpt_index %>
         </td>
       </tr>
 	    <tr>

@@ -10,7 +10,7 @@ include ReportHelper
 @root_url = ARGV[1]
 @jle_id = ARGV[2]
 env = ARGV[3].to_sym
-@rpt_link_url = "#{@root_url}/view_multiple/#{@jle_id}/1"
+@rpt_link_url = "#{@root_url}/view_multiple/#{@jle_id}/"
 
 # establish mongo connections to vamu and core
 initialize_mongo env
@@ -77,10 +77,9 @@ end
 
 begin
   @walgreens_data = load_rpt_data
-  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true, email_subject: "Walgreens Immunization Report for: #{format_date(@rpt_date)}"})
+  @include_chart = false
+  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true, email_subject: "Walgreens Immunization Report for: #{format_date(@rpt_date, RPT_DATE)}"})
   @include_chart = true
-  render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true})
-  @moroni =  true
   render_erb('./jobs/reports/das/walgreens/walgreens.html.erb', {multi_result: true})
   puts get_multi_result
 ensure

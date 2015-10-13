@@ -44,5 +44,4 @@ module DasQuickstats
     end
     reports
   end
-
 end

@@ -7,13 +7,13 @@
 <script>
     function drawPieCharts() {
         <% pts = disk_space_points(@doc) %>
-        var configCore = {
+        var configAudit = {
             data: [['Used Disk Space', <%= pts[:audit][:used]%>], ['Available Disk Space', <%=pts[:audit][:avail]%>]],
             div: "audit_pie_div",
             name: "Audit",
             capacity: "5.1 TB"
         };
-        drawPieStorage(configCore);
+        drawPieStorage(configAudit);
 
         var configCore = {
             data: [['Used Disk Space', <%= pts[:core][:used]%>], ['Available Disk Space', <%=pts[:core][:avail]%>]],

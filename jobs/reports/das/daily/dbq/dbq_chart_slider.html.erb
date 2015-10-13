@@ -1,0 +1,189 @@
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<style>
+    .DBQ_stubChart {
+        width: 100%;
+        height: 85px;
+        background-color: white;
+        color: black;
+    }
+
+    .DBQ_stubChart2 {
+        width: 45%;
+        padding-top: 10px;
+    }
+
+    .DBQ_textHeading {
+        float: left;
+        width: 100%;
+        height: 20px;
+    }
+
+    .dbqBottomLabel {
+        background-color: #1B49A0;
+        color: white;
+        border: 1px solid #1B49A0;
+        padding: 5px;
+        height: 18px;
+        width: 220px;
+        text-align: center;
+    }
+
+    .dbqTotals {
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        font-size: larger;
+        width: 225px;
+        height: 18px;
+        padding: 5px;
+        text-align: center;
+        vertical-align: bottom;
+        border: 1px solid #1B49A0;
+    }
+
+    div#chart_label_right {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: left;
+        width: 80%;
+        height: 25px;
+    }
+
+    div#chart_label_left {
+        font-size: 16px;
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        float: right;
+        height: 25px;
+    }
+
+</style>
+<script type='text/javascript'>
+    //[date, CAPRI_count, external_vendor_count]
+    var dbqData = [
+        <% data = dbq_data
+           data.each do |d|
+        %>
+        [new Date('<%= format_date(d[:_id])%>'), <%=d[:dbq][:capri_count]%>, <%=d[:dbq][:external_count]%>]<%= data.last.eql?(d) ? '' : ',' %>
+        <% end %>
+    ];
+
+    google.load('visualization', '1', {packages: ['corechart', 'bar', 'controls']});
+
+    google.setOnLoadCallback(drawDBQCharts);
+
+    function drawDBQCharts() {
+        drawDBQStacked();
+        drawDBQBarChart();
+    }
+
+    function drawDBQBarChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Date');
+        data.addColumn('number', 'External Vendors');
+        data.addColumn('number', 'CAPRI');
+        var day = dbqData[dbqData.length - 1][0];
+        day = (day.getMonth() + 1) + "/" + day.getDate() + "/" + day.getFullYear();
+        var row = [[day, dbqData[dbqData.length - 1][2], dbqData[dbqData.length - 1][1]]];
+        console.log(row);
+        data.addRows(row);
+
+        var options = {
+            isStacked: true,
+            legend: {position: 'none'},
+            series: {
+                0: {color: 'firebrick'},
+                1: {color: '#4183C4'}
+            },
+            hAxis: {
+                gridlines: {color: 'none', count: 0}
+            },
+            bars: 'horizontal'
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById('dbq_bar_chart_div'));
+        chart.draw(data, options);
+    }
+
+    function drawDBQStacked() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'CAPRI');
+        data.addColumn('number', 'External Vendors');
+
+        data.addRows(dbqData);
+
+        var options = {
+            title: 'DAS: Daily DBQ Submissions',
+            titleTextStyle: {fontSize: 18},
+            isStacked: true,
+            legend: {position: 'top', alignment: 'end'},
+            hAxis: {
+                title: 'Date Submitted to DAS',
+                titleTextStyle: {bold: true, fontSize: 12},
+                textStyle: {fontSize: 9},
+                gridlines: {color: 'none', count: 15},
+                format: 'M/d/yyyy',
+                viewWindow: {
+                    //min: new Date(2014, 11, 31, 18),
+                    max: new Date('<%=format_date(@doc[:_id])%>')
+                }
+            },
+            vAxis: {
+                title: 'Number of DBQs Submitted',
+                titleTextStyle: {bold: true, fontSize: 12},
+                gridlines: {count: 9}
+            }
+        };
+        // Create a dashboard.
+        var dashboard = new google.visualization.Dashboard(document.getElementById('dbq_column_chart_div'));
+
+        // Create a range slider, passing some options
+        var donutRangeSlider = new google.visualization.ControlWrapper({
+            'controlType': 'DateRangeFilter',
+            'containerId': 'filter_div',
+            'options': {
+                'filterColumnLabel': 'Date'
+            }
+        });
+
+        // Create a pie chart, passing some options
+        var colChart = new google.visualization.ChartWrapper({
+            'chartType': 'ColumnChart',
+            'containerId': 'chart_div',
+            'options': options
+        });
+        //var chart = new google.visualization.ColumnChart(document.getElementById('dbq_column_chart_div'));
+        //chart.draw(data, options);
+        // Establish dependencies, declaring that 'filter' drives 'pieChart',
+        // so that the pie chart will only display entries that are let through
+        // given the chosen slider range.
+        dashboard.bind(donutRangeSlider, colChart);
+
+        // Draw the dashboard.
+        dashboard.draw(data);
+    }
+</script>
+
+<div style="height: 640px; width: 99%; background-color:navy; color:white; border: 10px solid navy;">
+  <div id="chart_label_right">DAS Disability Benefits Questionnaires (DBQs): Key Statistics</div>
+  <div id="chart_label_left">Through <%= format_date(@doc[:_id]) %></div>
+
+  <div style="width: 100%" class="DBQ_textHeading">DBQ Details by Submitting Entity for: <%= format_date(@doc[:_id]) %></div>
+  <div id="dbq_bar_chart_div" style="float: left;" class="DBQ_stubChart">Stacked Bar Chart, External vs. CAPRI</div>
+  <div style="width: 100%" class="DBQ_textHeading">Running Totals</div>
+  <div id="dbq_column_chart_div" style="width: 100%; float: left; height: 450px">
+    <div id="filter_div" style="width: 98.25%; float: left; background-color: white; color: black; padding: 10px;"></div>
+    <div id="chart_div" style="width: 100%; float: left; height: 410px; ">DAS: Daily DBQ Submissions - Column Chart</div>
+  </div>
+  <% dbq_chart_hash = dbq_chart_points(@doc) %>
+  <div style="width: 100%; float: left;">
+    <div class="DBQ_stubChart2" style="float: left;">
+      <div style="float: left; " class="dbqBottomLabel">Total DBQs Submitted:</div>
+      <div id="total_dbq_submitted_div" style="float: left; " class="dbqTotals"><%= format_number(dbq_chart_hash[:dbqs_submitted]) %></div>
+    </div>
+    <div class="DBQ_stubChart2" style="float: right; ">
+      <div id="total_size_div" style="float: right; " class="dbqTotals"><%= dbq_chart_hash[:dbq_tot_size] %> GB</div>
+      <div style="float: right; " class="dbqBottomLabel">Total Size of DBQ Document:</div>
+    </div>
+  </div>
+</div>

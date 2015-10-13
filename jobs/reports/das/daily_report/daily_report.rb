@@ -34,9 +34,10 @@ initialize_mongo env
 @collection = @vamu_audit_db[:str_dbq_daily_report]
 
 #HAIMS hour translation hash
+offset = 4
 HOUR_TRANSLATION_HASH = {}
 (24..47).to_a.each do |i|
-  HOUR_TRANSLATION_HASH[i - 24] = (i-4)%24
+  HOUR_TRANSLATION_HASH[i - 24] = (i-offset)%24
 end
 
 def write_rpt_data(rpt_date)
@@ -44,7 +45,9 @@ def write_rpt_data(rpt_date)
     rpt_date = format_date(rpt_date, RPT_DATE)
   end
 
-  putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./dailyReports-gpb.py '#{rpt_date}'\"}
+  eastern_offset = Time.parse(rpt_date).dst? ? 4 : 5
+  putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./dailyReports-vamu.py '#{rpt_date}' #{eastern_offset.to_s}\"}
+  # putty = %{#{@plink} dasuser@bhiepapp4.r04.med.va.gov -pw dasprod@123! \"cd audit && python ./dailyReports-gpb.py '#{rpt_date}'\"}
   str = backtick(putty)
   str = str.split("\n")
 
@@ -155,7 +158,8 @@ end
 
 def write_report(doc)
   @doc = doc
-  render_erb('./jobs/reports/das/daily_report/daily_rpt_email_result.html.erb', {multi_result: true, email_subject: "STR & DBQ Status for: #{@doc[:rpt_date_string]}"})
+  render_erb('./jobs/reports/das/daily_report/daily_report3.html.erb', {multi_result: true, email_subject: "STR & DBQ Status for: #{@doc[:rpt_date_string]}"})
+  @show_charts = true
   rpt_result = render_erb('./jobs/reports/das/daily_report/daily_report.html.erb', {multi_result: true})
   File.open(@rpt_output_html, 'w') { |file| file.write(rpt_result) }
   render_erb('./jobs/reports/das/daily_report/daily_report2.html.erb', {multi_result: true})
