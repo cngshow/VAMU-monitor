@@ -58,7 +58,7 @@
         data.addColumn('number', 'TB');
 
         data.addRows(config.data);
-        var config_name = config.name + (config.name.toUpperCase().equals('CORE') ? ' (20 TB Total)' : ' (5.1 TB Total)');
+        var config_name = config.name + (config.name === 'Core' ? ' (20 TB)' : ' (5.1 TB)');
 
         var options = {
             title: 'DAS Data Store: ' + config_name,
