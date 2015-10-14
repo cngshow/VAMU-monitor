@@ -59,9 +59,7 @@ dates.each do |d|
 end
 
 @collections.each do |col|
-  end_date = DateTime.parse(@rpt_date + 'T00:00:00Z')
-  start_date = DateTime.parse(@rpt_date + 'T00:00:00Z') - lookback
-  load_rpt_data(start_date, end_date, col)
+  load_rpt_data(dates[0], dates[-1] + 1, col)
 end
 
 # print out the report results
